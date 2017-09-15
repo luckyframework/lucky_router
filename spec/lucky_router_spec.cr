@@ -12,15 +12,23 @@ describe LuckyRouter do
     router.add("get/users/:id/edit", :edit)
     router.add("get/users/:id/new", :new)
 
-    1000.times do
-      router.match!("get/users").payload.should eq :index
-      router.match!("post/users").payload.should eq :create
-      router.match!("get/users/1").payload.should eq :show
-      router.match!("delete/users/1").payload.should eq :delete
-      router.match!("put/users/1").payload.should eq :update
-      router.match!("get/users/1/edit").payload.should eq :edit
-      router.match!("get/users/1/new").payload.should eq :new
-    end
+    router.match!("get/users").payload.should eq :index
+    router.match!("post/users").payload.should eq :create
+    router.match!("get/users/1").payload.should eq :show
+    router.match!("delete/users/1").payload.should eq :delete
+    router.match!("put/users/1").payload.should eq :update
+    router.match!("get/users/1/edit").payload.should eq :edit
+    router.match!("get/users/1/new").payload.should eq :new
+  end
+
+  it "gets params" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("get/users/:user_id/tasks/:id", :show)
+
+    router.match!("get/users/user_param/tasks/task_param").params.should eq({
+      "user_id" => "user_param",
+      "id" => "task_param",
+    })
   end
 
   pending "handles conflicting routes" do
