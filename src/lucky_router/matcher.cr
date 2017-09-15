@@ -1,32 +1,24 @@
 class LuckyRouter::Matcher(T)
-  private getter paths
-  @routes : Array(Route(T))?
+  getter paths, routes
+  @routes = Hash(String, Array(Route(T))).new
 
   def initialize
     @paths = {} of String => T
   end
 
-  def add(path : String, payload : T)
-    paths[path] = payload
+  def add(method : String, path : String, payload : T)
+    routes[method] = (routes[method]? || [] of Route(T)) <<Route(T).new(path, payload)
   end
 
-  def match(path_to_match : String)
+  def match(method : String, path_to_match : String) : MatchedRoute(T)?
     parts_to_match = path_to_match.split("/")
-    if route = routes.find(&.match?(parts_to_match))
+    if route = routes[method].find(&.match?(parts_to_match))
       MatchedRoute.new(route, parts_to_match)
     end
   end
 
-  def match!(path_to_match : String)
-    match(path_to_match) || raise "No matching route found for: #{path_to_match}"
-  end
-
-  private def routes
-    @routes ||= begin
-      paths.map do |path, payload|
-        Route(T).new(path, payload)
-      end
-    end
+  def match!(method : String, path_to_match : String) : MatchedRoute(T)
+    match(method, path_to_match) || raise "No matching route found for: #{path_to_match}"
   end
 
   struct MatchedRoute(T)
@@ -57,6 +49,9 @@ class LuckyRouter::Matcher(T)
     end
 
     def match?(parts_to_match : Array(String))
+      # p "--------------"
+      # p parts_to_match
+      # p path_parts
       all_parts_match?(parts_to_match) && parts_to_match.size == path_parts.size
     end
 
