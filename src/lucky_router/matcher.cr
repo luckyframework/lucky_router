@@ -10,13 +10,15 @@ class LuckyRouter::Matcher(T)
     paths[path] = payload
   end
 
-  def match!(path_to_match : String)
+  def match(path_to_match : String)
     parts_to_match = path_to_match.split("/")
     if route = routes.find(&.match?(parts_to_match))
       MatchedRoute.new(route, parts_to_match)
-    else
-      raise "No matching route found for: #{path_to_match}"
     end
+  end
+
+  def match!(path_to_match : String)
+    match(path_to_match) || raise "No matching route found for: #{path_to_match}"
   end
 
   private def routes
@@ -27,7 +29,7 @@ class LuckyRouter::Matcher(T)
     end
   end
 
-  class MatchedRoute(T)
+  struct MatchedRoute(T)
     private getter route, parts_to_match
 
     def initialize(@route : Route(T), @parts_to_match : Array(String))

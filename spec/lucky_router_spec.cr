@@ -21,6 +21,13 @@ describe LuckyRouter do
     router.match!("get/users/1/new").payload.should eq :new
   end
 
+  it "returns nil if nothing matches" do
+    router = LuckyRouter::Matcher(Symbol).new
+
+    router.add("get/whatever", :index)
+    router.match("get/something_else").should be_nil
+  end
+
   it "gets params" do
     router = LuckyRouter::Matcher(Symbol).new
     router.add("get/users/:user_id/tasks/:id", :show)
