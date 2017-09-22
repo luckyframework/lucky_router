@@ -49,9 +49,6 @@ class LuckyRouter::Matcher(T)
     end
 
     def match?(parts_to_match : Array(String))
-      # p "--------------"
-      # p parts_to_match
-      # p path_parts
       all_parts_match?(parts_to_match) && parts_to_match.size == path_parts.size
     end
 
