@@ -49,11 +49,16 @@ class LuckyRouter::Matcher(T)
     end
 
     def match?(parts_to_match : Array(String))
-      all_parts_match?(parts_to_match) && parts_to_match.size == path_parts.size
+      parts_to_match.size == size && all_parts_match?(parts_to_match)
     end
 
     def path_parts
       @path_parts ||= path.split("/")
+    end
+
+    @size : Int32?
+    def size
+      @size ||= path_parts.size
     end
 
     private def all_parts_match?(parts_to_match)
