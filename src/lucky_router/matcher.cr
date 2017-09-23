@@ -9,11 +9,10 @@ class LuckyRouter::Matcher(T)
 
   class Fragment(T)
     alias Name = String
-    getter name : String
     getter payload : T
     getter dynamic_part : Fragment(T)?
 
-    def initialize(@payload, @name)
+    def initialize(@payload)
     end
 
     def static_parts
@@ -36,7 +35,7 @@ class LuckyRouter::Matcher(T)
     end
 
     private def add_to_params(params : Hash(String, String), value : String) : Hash(String, String)
-      params[dynamic_part.not_nil!.name] = value
+      params["hubaluba"] = value
       params
     end
 
@@ -66,8 +65,8 @@ class LuckyRouter::Matcher(T)
   end
 
   def add(method : String, path : String, payload : T)
-    # parts = path.split("/")
-    # routes[method] ||= {parts.size => Fragment(T).new}
+    parts = path.split("/")
+    routes[method] ||= {parts.size => Fragment(T).new(payload: payload)}
     # routes[method][parts.size].process_parts(parts, payload)
   end
 
