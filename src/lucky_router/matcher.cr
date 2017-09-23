@@ -10,7 +10,7 @@ class LuckyRouter::Matcher(T)
   class Fragment(T)
     alias Name = String
     getter payload : T
-    getter dynamic_part : Fragment(T)?
+    property dynamic_part : Fragment(T)?
     getter static_parts = Hash(Name, Fragment(T)).new
 
     def initialize(@payload)
@@ -26,7 +26,7 @@ class LuckyRouter::Matcher(T)
 
     private def add_part(part, next_parts)
       if part.starts_with?(":")
-        dynamic_part = Fragment(T).new(payload).process_parts(next_parts)
+        self.dynamic_part = Fragment(T).new(payload).process_parts(next_parts)
       else
         static_parts[part] = Fragment(T).new(payload).process_parts(next_parts)
       end
