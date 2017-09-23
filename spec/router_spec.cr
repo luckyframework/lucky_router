@@ -37,7 +37,7 @@ describe LuckyRouter do
     router.match("get", "something_else").should be_nil
   end
 
-  pending "gets params" do
+  it "gets params" do
     router = LuckyRouter::Matcher(Symbol).new
     router.add("get", "users/:user_id/tasks/:id", :show)
 
