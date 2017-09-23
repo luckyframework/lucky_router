@@ -16,10 +16,6 @@ class LuckyRouter::Matcher(T)
     def initialize(@payload)
     end
 
-    # def static_parts
-    #    Hash(Name, Fragment(T)).new
-    # end
-
     def process_parts(parts : Array(String))
       unless parts.empty?
         add_part(parts.first, parts.skip(1))
@@ -85,11 +81,6 @@ class LuckyRouter::Matcher(T)
     parts = path.split("/")
     routes[method] ||= Hash(RoutePartsSize, Fragment(T)).new
     routes[method][parts.size] = Fragment(T).new(payload)
-
-    p routes
-    p method
-    p path
-    p parts
     routes[method][parts.size].process_parts(parts)
   end
 
