@@ -19,6 +19,7 @@ describe LuckyRouter::Matcher::Fragment do
     users_fragment = fragment.static_parts["users"]
     id_fragment = users_fragment.dynamic_part.not_nil!
     id_fragment.static_parts["edit"].should_not be_nil
+    id_fragment.static_parts["new"].should_not be_nil
   end
 end
 
