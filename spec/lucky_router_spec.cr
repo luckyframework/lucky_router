@@ -11,12 +11,12 @@ describe LuckyRouter do
     # end
 
     router.add("get", "users", :index)
-    # router.add("post", "users", :create)
-    # router.add("get", "users/:id", :show)
-    # router.add("delete", "users/:id", :delete)
-    # router.add("put", "users/:id", :update)
-    # router.add("get", "users/:id/edit", :edit)
-    # router.add("get", "users/:id/new", :new)
+    router.add("post", "users", :create)
+    router.add("get", "users/:id", :show)
+    router.add("delete", "users/:id", :delete)
+    router.add("put", "users/:id", :update)
+    router.add("get", "users/:id/edit", :edit)
+    router.add("get", "users/:id/new", :new)
 
     1000.times do
       router.match!("get", "users").payload.should eq :index
