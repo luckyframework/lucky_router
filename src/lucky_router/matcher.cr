@@ -26,9 +26,11 @@ class LuckyRouter::Matcher(T)
 
     private def add_part(part, next_parts)
       if part.starts_with?(":")
-        self.dynamic_part = Fragment(T).new(payload).process_parts(next_parts)
+        self.dynamic_part ||= Fragment(T).new(payload)
+        self.dynamic_part.not_nil!.process_parts(next_parts)
       else
-        static_parts[part] = Fragment(T).new(payload).process_parts(next_parts)
+        static_parts[part] ||= Fragment(T).new(payload)
+        static_parts[part].process_parts(next_parts)
       end
     end
 
