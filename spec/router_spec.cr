@@ -5,11 +5,12 @@ describe LuckyRouter do
     router = LuckyRouter::Matcher(Symbol).new
 
     1000.times do
-      router.add("put", "#{rand * 100}", :update)
-      router.add("get", "#{rand * 100}/edit", :edit)
-      router.add("get", "#{rand * 100}/new/edit", :new)
+      router.add("put", "#{(rand * 100).to_i}", :fake_show)
+      router.add("get", "#{(rand * 100).to_i}/edit", :fake_edit)
+      router.add("get", "#{(rand * 100).to_i}/new/edit", :fake_new_edit)
     end
 
+    router.add("get", "posts/:id", :fake_post)
     router.add("get", "users", :index)
     router.add("post", "users", :create)
     router.add("get", "users/:id", :show)
