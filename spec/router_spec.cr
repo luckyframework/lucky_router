@@ -29,14 +29,6 @@ describe LuckyRouter do
     end
   end
 
-  it "handles root routes" do
-    router = LuckyRouter::Matcher(Symbol).new
-
-    router.add("get", "", :root)
-
-    router.match!("get", "").payload.should eq :root
-  end
-
   it "returns nil if nothing matches" do
     router = LuckyRouter::Matcher(Symbol).new
 
