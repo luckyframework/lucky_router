@@ -16,7 +16,7 @@ describe LuckyRouter do
     router.add("delete", "users/:id", :delete)
     router.add("put", "users/:id", :update)
     router.add("get", "users/:id/edit", :edit)
-    # router.add("get", "users/:id/new", :new)
+    router.add("get", "users/:id/new", :new)
 
     1000.times do
       router.match!("get", "users").payload.should eq :index
@@ -25,8 +25,16 @@ describe LuckyRouter do
       router.match!("delete", "users/1").payload.should eq :delete
       router.match!("put", "users/1").payload.should eq :update
       router.match!("get", "users/1/edit").payload.should eq :edit
-      # router.match!("get", "users/1/new").payload.should eq :new
+      router.match!("get", "users/1/new").payload.should eq :new
     end
+  end
+
+  it "handles root routes" do
+    router = LuckyRouter::Matcher(Symbol).new
+
+    router.add("get", "", :root)
+
+    router.match!("get", "").payload.should eq :root
   end
 
   it "returns nil if nothing matches" do
@@ -36,7 +44,7 @@ describe LuckyRouter do
     router.match("get", "something_else").should be_nil
   end
 
-  it "gets params" do
+  pending "gets params" do
     router = LuckyRouter::Matcher(Symbol).new
     router.add("get", "users/:user_id/tasks/:id", :show)
 

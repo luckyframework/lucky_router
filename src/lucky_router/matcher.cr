@@ -10,6 +10,7 @@ class LuckyRouter::Matcher(T)
   class Fragment(T)
     alias Name = String
     getter payload : T
+    # property dynamic_part : {name: String, fragment: Fragment(T)}?
     property dynamic_part : Fragment(T)?
     getter static_parts = Hash(Name, Fragment(T)).new
 
