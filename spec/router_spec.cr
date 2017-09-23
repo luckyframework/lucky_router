@@ -53,7 +53,7 @@ describe LuckyRouter do
     router.add("get", "users", :index)
     router.add("get", ":categories", :category_index)
 
-    router.match!("get", "users").payload.should eq :category_index
+    router.match!("get", "users").payload.should eq :index
     router.match!("get", "something").payload.should eq :category_index
   end
 end
