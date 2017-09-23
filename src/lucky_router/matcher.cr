@@ -11,12 +11,29 @@ class LuckyRouter::Matcher(T)
     alias Name = String
     getter payload : T
     getter dynamic_part : Fragment(T)?
+    getter static_parts = Hash(Name, Fragment(T)).new
 
     def initialize(@payload)
     end
 
-    def static_parts
-       Hash(Name, Fragment(T)).new
+    # def static_parts
+    #    Hash(Name, Fragment(T)).new
+    # end
+
+    def process_parts(parts : Array(String))
+      unless parts.empty?
+        add_part(parts.first, parts.skip(1))
+      end
+
+      self
+    end
+
+    private def add_part(part, next_parts)
+      if part.starts_with?(":")
+        dynamic_part = Fragment(T).new(payload).process_parts(next_parts)
+      else
+        static_parts[part] = Fragment(T).new(payload).process_parts(next_parts)
+      end
     end
 
     def find(parts : Array(String), params = {} of String => String)
@@ -66,8 +83,14 @@ class LuckyRouter::Matcher(T)
 
   def add(method : String, path : String, payload : T)
     parts = path.split("/")
-    routes[method] ||= {parts.size => Fragment(T).new(payload: payload)}
-    # routes[method][parts.size].process_parts(parts, payload)
+    routes[method] ||= Hash(RoutePartsSize, Fragment(T)).new
+    routes[method][parts.size] = Fragment(T).new(payload)
+
+    p routes
+    p method
+    p path
+    p parts
+    routes[method][parts.size].process_parts(parts)
   end
 
   def match(method : String, path_to_match : String)
