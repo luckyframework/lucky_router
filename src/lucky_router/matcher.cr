@@ -1,78 +1,86 @@
 class LuckyRouter::Matcher(T)
   getter paths, routes
-  @routes = Hash(String, Array(Route(T))).new
+  alias RoutePartsSize = Int32
+  alias HttpMethod = String
+  @routes = Hash(HttpMethod, Hash(RoutePartsSize, Fragment(T))).new
 
-  def initialize
-    @paths = {} of String => T
+  class NoMatch
+  end
+
+  class Fragment(T)
+    alias Name = String
+    getter name : String
+    getter payload : T
+    getter dynamic_part : Fragment(T)?
+
+    def initialize(@payload, @name)
+    end
+
+    def static_parts
+       Hash(Name, Fragment(T)).new
+    end
+
+    def find(parts : Array(String), params = {} of String => String)
+      part = parts.first
+
+      if last_fragment?(parts) && has_match?(part)
+        MatchedFragment(T).new(payload, params)
+      elsif next_fragment = find_static_fragment(part)
+        next_fragment.find(parts.skip(1), params)
+      elsif next_fragment = find_dynamic_fragment(part)
+        params = add_to_params(params, value: part)
+        next_fragment.find(parts.skip(1), params)
+      else
+        NoMatch.new
+      end
+    end
+
+    private def add_to_params(params : Hash(String, String), value : String) : Hash(String, String)
+      params[dynamic_part.not_nil!.name] = value
+      params
+    end
+
+    private def has_match?(part)
+      find_static_fragment(part) || find_dynamic_fragment(part)
+    end
+
+    private def find_static_fragment(part)
+      static_parts[part]?
+    end
+
+    private def find_dynamic_fragment(part)
+      dynamic_part
+    end
+
+    private def last_fragment?(parts)
+      parts.size == 1
+    end
+  end
+
+  class MatchedFragment(T)
+    getter payload : T
+    getter params : Hash(String, String)
+
+    def initialize(@payload, @params)
+    end
   end
 
   def add(method : String, path : String, payload : T)
-    routes[method] = (routes[method]? || [] of Route(T)) <<Route(T).new(path, payload)
+    # parts = path.split("/")
+    # routes[method] ||= {parts.size => Fragment(T).new}
+    # routes[method][parts.size].process_parts(parts, payload)
   end
 
-  def match(method : String, path_to_match : String) : MatchedRoute(T)?
+  def match(method : String, path_to_match : String)
     parts_to_match = path_to_match.split("/")
-    if route = routes[method].find(&.match?(parts_to_match))
-      MatchedRoute.new(route, parts_to_match)
+    match = routes[method][parts_to_match.size].find(parts_to_match)
+
+    if match.is_a?(MatchedFragment)
+      match
     end
   end
 
-  def match!(method : String, path_to_match : String) : MatchedRoute(T)
+  def match!(method : String, path_to_match : String) : MatchedFragment(T)
     match(method, path_to_match) || raise "No matching route found for: #{path_to_match}"
-  end
-
-  struct MatchedRoute(T)
-    private getter route, parts_to_match
-
-    def initialize(@route : Route(T), @parts_to_match : Array(String))
-    end
-
-    def payload
-      route.payload
-    end
-
-    def params : Hash(String, String)
-      params_hash = {} of String => String
-      route.named_parts_with_indices.each do |index, part_name|
-        params_hash[part_name] = parts_to_match[index]
-      end
-      params_hash
-    end
-  end
-
-  struct Route(T)
-    getter path, payload
-    @path_parts : Array(String)?
-    @named_parts_with_indices : Hash(Int32, String)?
-
-    def initialize(@path : String, @payload : T)
-    end
-
-    def match?(parts_to_match : Array(String))
-      parts_to_match.size == size && all_parts_match?(parts_to_match)
-    end
-
-    def path_parts
-      @path_parts ||= path.split("/")
-    end
-
-    @size : Int32?
-    def size
-      @size ||= path_parts.size
-    end
-
-    private def all_parts_match?(parts_to_match)
-      parts_to_match.each_with_index.all? do |part, index|
-        path_part = path_parts[index]?
-        path_part == part || path_part.try(&.starts_with?(":"))
-      end
-    end
-
-    def named_parts_with_indices
-      @named_parts_with_indices ||= path_parts.each_with_index.reduce({} of Int32 => String) do |named_part_hash, (part, index)|
-        named_part_hash[index] = part.gsub(":", "") if part.starts_with?(":")
-        named_part_hash
-      end
-    end
   end
 end
