@@ -4,6 +4,7 @@ describe LuckyRouter do
   it "handles many routes" do
     router = LuckyRouter::Matcher(Symbol).new
 
+    # Here to makes sure things run super fast even with lots of routes
     1000.times do
       router.add("put", "#{(rand * 100).to_i}", :fake_show)
       router.add("get", "#{(rand * 100).to_i}/edit", :fake_edit)
