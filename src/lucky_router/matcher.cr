@@ -23,31 +23,43 @@ class LuckyRouter::Matcher(T)
 
     private def add_part(part, next_parts, payload : T)
       if part.starts_with?(":")
-        self.dynamic_part ||= {name: part.gsub(":", ""), fragment: Fragment(T).new}
-        self.dynamic_part.not_nil![:fragment].process_parts(next_parts, payload)
-        if next_parts.empty?
-          self.dynamic_part.not_nil![:fragment].stored_payload = payload
-        end
+        add_dynamic_part(part, next_parts, payload)
       else
-        static_parts[part] ||= Fragment(T).new
-        static_parts[part].process_parts(next_parts, payload)
-
-        if next_parts.empty?
-          static_parts[part].stored_payload = payload
-        end
+        add_static_part(part, next_parts, payload)
       end
     end
 
-    def find(parts : Array(String), params = {} of String => String)
+    private def add_dynamic_part(part, next_parts, payload)
+      self.dynamic_part ||= {name: part.gsub(":", ""), fragment: Fragment(T).new}
+      self.dynamic_part.not_nil![:fragment].process_parts(next_parts, payload)
+
+      if next_parts.empty?
+        add_payload_to_dynamic_part(payload)
+      end
+    end
+
+    private def add_static_part(part, next_parts, payload)
+      static_parts[part] ||= Fragment(T).new
+      static_parts[part].process_parts(next_parts, payload)
+
+      if next_parts.empty?
+        static_parts[part].stored_payload = payload
+      end
+    end
+
+    private def add_payload_to_dynamic_part(payload)
+      self.dynamic_part.not_nil![:fragment].stored_payload = payload
+    end
+
+    def find(parts : Array(String), params = {} of String => String) : MatchedFragment(T) | NoMatch
       part = parts.first
+      params = add_to_params(params, value: part) unless dynamic_part.nil?
 
       if last_fragment?(parts) && has_match?(part)
-        params = add_to_params(params, value: part) unless dynamic_part.nil?
         MatchedFragment(T).new(has_match?(part).not_nil!.stored_payload.not_nil!, params)
       elsif next_fragment = find_static_fragment(part)
         next_fragment.find(parts.skip(1), params)
       elsif next_fragment = find_dynamic_fragment
-        params = add_to_params(params, value: part)
         next_fragment.find(parts.skip(1), params)
       else
         NoMatch.new
