@@ -31,6 +31,11 @@ describe LuckyRouter do
     end
   end
 
+  it "does not blow up when there are no routes" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.match("post", "users")
+  end
+
   it "returns nil if nothing matches" do
     router = LuckyRouter::Matcher(Symbol).new
 

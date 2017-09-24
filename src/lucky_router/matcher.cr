@@ -105,6 +105,7 @@ class LuckyRouter::Matcher(T)
 
   def match(method : String, path_to_match : String) : MatchedFragment(T)?
     parts_to_match = path_to_match.split("/")
+    return if routes[method]?.try(&.[parts_to_match.size]?).nil?
     match = routes[method][parts_to_match.size].find(parts_to_match)
 
     if match.is_a?(MatchedFragment)
