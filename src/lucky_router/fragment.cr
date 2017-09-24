@@ -5,41 +5,8 @@ class LuckyRouter::Fragment(T)
   getter static_parts = Hash(Name, Fragment(T)).new
 
   def process_parts(parts : Array(String), payload : T)
-    unless parts.empty?
-      add_part(parts.first, parts.skip(1), payload)
-    end
-
+    PartProcessor(T).new(self, parts: parts, payload: payload).run
     self
-  end
-
-  private def add_part(part, next_parts, payload : T)
-    if part.starts_with?(":")
-      add_dynamic_part(part, next_parts, payload)
-    else
-      add_static_part(part, next_parts, payload)
-    end
-  end
-
-  private def add_dynamic_part(part, next_parts, payload)
-    self.dynamic_part ||= {name: part.gsub(":", ""), fragment: Fragment(T).new}
-    self.dynamic_part.not_nil![:fragment].process_parts(next_parts, payload)
-
-    if next_parts.empty?
-      add_payload_to_dynamic_part(payload)
-    end
-  end
-
-  private def add_static_part(part, next_parts, payload)
-    static_parts[part] ||= Fragment(T).new
-    static_parts[part].process_parts(next_parts, payload)
-
-    if next_parts.empty?
-      static_parts[part].stored_payload = payload
-    end
-  end
-
-  private def add_payload_to_dynamic_part(payload)
-    self.dynamic_part.not_nil![:fragment].stored_payload = payload
   end
 
   def find(parts : Array(String), params = {} of String => String) : Match(T) | NoMatch
