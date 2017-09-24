@@ -11,7 +11,6 @@ class LuckyRouter::Matcher(T)
     alias Name = String
     property stored_payload : T?
     property dynamic_part : {name: String, fragment: Fragment(T)}?
-    # property dynamic_part : Fragment(T)?
     getter static_parts = Hash(Name, Fragment(T)).new
 
     def process_parts(parts : Array(String), payload : T)
