@@ -18,6 +18,7 @@ describe LuckyRouter do
     router.add("put", "/users/:id", :update)
     router.add("get", "/users/:id/edit", :edit)
     router.add("get", "/users/:id/new", :new)
+    router.add("get", "/users/:user_id/tasks/:id", :user_tasks)
 
     1000.times do
       router.match!("get", "/posts/1").payload.should eq :post_index
@@ -28,6 +29,7 @@ describe LuckyRouter do
       router.match!("put", "/users/1").payload.should eq :update
       router.match!("get", "/users/1/edit").payload.should eq :edit
       router.match!("get", "/users/1/new").payload.should eq :new
+      router.match!("get", "/users/1/tasks/1").payload.should eq :user_tasks
     end
   end
 
