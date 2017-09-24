@@ -5,7 +5,7 @@ class LuckyRouter::Matcher(T)
   @routes = Hash(HttpMethod, Hash(RoutePartsSize, Fragment(T))).new
 
   def add(method : String, path : String, payload : T)
-    parts = path.gsub(/^\//, "").split("/")
+    parts = path.split("/")
 
     routes[method] ||= Hash(RoutePartsSize, Fragment(T)).new
     routes[method][parts.size] ||= Fragment(T).new
@@ -13,7 +13,7 @@ class LuckyRouter::Matcher(T)
   end
 
   def match(method : String, path_to_match : String) : Match(T)?
-    parts_to_match = path_to_match.gsub(/^\//, "").split("/")
+    parts_to_match = path_to_match.split("/")
     return if routes[method]?.try(&.[parts_to_match.size]?).nil?
     match = routes[method][parts_to_match.size].find(parts_to_match)
 
