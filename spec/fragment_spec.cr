@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-describe LuckyRouter::Matcher::Fragment do
+describe LuckyRouter::Fragment do
   it "adds parts successfully" do
     fragment = build_fragment
 
@@ -24,5 +24,5 @@ describe LuckyRouter::Matcher::Fragment do
 end
 
 private def build_fragment
-  LuckyRouter::Matcher::Fragment(Symbol).new
+  LuckyRouter::Fragment(Symbol).new
 end

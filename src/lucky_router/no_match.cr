@@ -1,0 +1,2 @@
+class LuckyRouter::NoMatch
+end
