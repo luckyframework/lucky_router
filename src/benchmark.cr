@@ -1,6 +1,5 @@
 require "./lucky_router"
 
-time = Time.now
 
 router = LuckyRouter::Matcher(Symbol).new
 
@@ -17,6 +16,8 @@ router.add("delete", "/users/:id", :delete)
 router.add("put", "/users/:id", :update)
 router.add("get", "/users/:id/edit", :edit)
 router.add("get", "/users/:id/new", :new)
+
+time = Time.now
 
 1000.times do
   router.match!("post", "/users")
