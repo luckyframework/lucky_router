@@ -53,7 +53,7 @@ describe LuckyRouter do
     })
   end
 
-  it "handles conflicting routes" do
+  it "handles conflicting routes by matching static routes first" do
     router = LuckyRouter::Matcher(Symbol).new
 
     router.add("get", "users", :index)
