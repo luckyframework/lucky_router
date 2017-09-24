@@ -53,6 +53,16 @@ describe LuckyRouter do
     })
   end
 
+  it "does not add params if there is a static match" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("get", "users/foo/tasks/bar", :show)
+    router.add("get", "users/:user_id/tasks/:id", :show)
+
+    params = router.match!("get", "users/foo/tasks/bar").params
+
+    params.should eq({} of String => String)
+  end
+
   it "handles conflicting routes by matching static routes first" do
     router = LuckyRouter::Matcher(Symbol).new
 
