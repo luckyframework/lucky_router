@@ -48,11 +48,11 @@ class LuckyRouter::PartProcessor(T)
     fragment.static_parts[current_part].process_parts(next_parts, payload)
 
     if next_parts.empty?
-      fragment.static_parts[current_part].stored_payload = payload
+      fragment.static_parts[current_part].payload = payload
     end
   end
 
   private def add_payload_to_dynamic_part
-    fragment.dynamic_part.not_nil![:fragment].stored_payload = payload
+    fragment.dynamic_part.not_nil![:fragment].payload = payload
   end
 end
