@@ -1,6 +1,5 @@
 require "./lucky_router"
 
-
 router = LuckyRouter::Matcher(Symbol).new
 
 1000.times do
