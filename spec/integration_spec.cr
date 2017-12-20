@@ -62,7 +62,7 @@ describe LuckyRouter do
 
     router.match!("get", "/users/user_param/tasks/task_param").params.should eq({
       "user_id" => "user_param",
-      "id" => "task_param",
+      "id"      => "task_param",
     })
   end
 
