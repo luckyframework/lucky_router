@@ -85,4 +85,33 @@ describe LuckyRouter do
     router.match!("get", "/users").payload.should eq :index
     router.match!("get", "/something").payload.should eq :category_index
   end
+
+  describe "route with trailling slash" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("get", "/users/:id", :show)
+
+    describe "is defined with a trailling slash" do
+      router.add("get", "/users/", :index)
+
+      it "should treat it as a index route when called without a trailling slash" do
+        router.match!("get", "/users").payload.should eq :index
+      end
+  
+      it "should treat it as a index route when called with a trailling slash" do
+        router.match!("get", "/users/").payload.should eq :index
+      end
+    end
+
+    describe "is defined without a trailling slash" do
+      router.add("get", "/users", :index)
+
+      it "should treat it as a index route when called without a trailling slash" do
+        router.match!("get", "/users").payload.should eq :index
+      end
+
+      it "should treat it as a index route when called with a trailling slash" do
+        router.match!("get", "/users/").payload.should eq :index
+      end
+    end
+  end
 end
