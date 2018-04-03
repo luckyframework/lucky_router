@@ -90,7 +90,7 @@ describe LuckyRouter do
     router = LuckyRouter::Matcher(Symbol).new
     router.add("get", "/users/:id", :show)
 
-    describe "is defined with a trailing slash" do
+    context "is defined with a trailing slash" do
       router.add("get", "/users/", :index)
 
       it "should treat it as a index route when called without a trailing slash" do
@@ -102,7 +102,7 @@ describe LuckyRouter do
       end
     end
 
-    describe "is defined without a trailing slash" do
+    context "is defined without a trailing slash" do
       router.add("get", "/users", :index)
 
       it "should treat it as a index route when called without a trailing slash" do
