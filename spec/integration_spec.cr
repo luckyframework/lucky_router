@@ -44,6 +44,18 @@ describe LuckyRouter do
     router.match!("get", "/").payload.should eq :root
   end
 
+  it "allows head routes when a get route is defined" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("get", "/health", :health)
+    router.match!("head", "/health").payload.should eq :health
+  end
+
+  it "does not allow head routes when something else is defined" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("put", "/update", :update)
+    router.match("head", "/update").should be_nil
+  end
+
   it "does not blow up when there are no routes" do
     router = LuckyRouter::Matcher(Symbol).new
     router.match("post", "/users")

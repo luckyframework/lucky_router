@@ -6,6 +6,11 @@ class LuckyRouter::Matcher(T)
 
   def add(method : String, path : String, payload : T)
     parts = extract_parts(path)
+    if method.downcase == "get"
+      routes["head"] ||= Hash(RoutePartsSize, Fragment(T)).new
+      routes["head"][parts.size] ||= Fragment(T).new
+      routes["head"][parts.size].process_parts(parts, payload)
+    end
     routes[method] ||= Hash(RoutePartsSize, Fragment(T)).new
     routes[method][parts.size] ||= Fragment(T).new
     routes[method][parts.size].process_parts(parts, payload)
