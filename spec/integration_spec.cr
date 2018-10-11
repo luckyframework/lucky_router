@@ -108,7 +108,7 @@ describe LuckyRouter do
       it "should treat it as a index route when called without a trailing slash" do
         router.match!("get", "/users").payload.should eq :index
       end
-  
+
       it "should treat it as a index route when called with a trailing slash" do
         router.match!("get", "/users/").payload.should eq :index
       end

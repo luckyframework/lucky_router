@@ -7,13 +7,10 @@ class LuckyRouter::Matcher(T)
   def add(method : String, path : String, payload : T)
     parts = extract_parts(path)
     if method.downcase == "get"
-      routes["head"] ||= Hash(RoutePartsSize, Fragment(T)).new
-      routes["head"][parts.size] ||= Fragment(T).new
-      routes["head"][parts.size].process_parts(parts, payload)
+      add_route("head", parts, payload)
     end
-    routes[method] ||= Hash(RoutePartsSize, Fragment(T)).new
-    routes[method][parts.size] ||= Fragment(T).new
-    routes[method][parts.size].process_parts(parts, payload)
+
+    add_route(method, parts, payload)
   end
 
   def match(method : String, path_to_match : String) : Match(T)?
@@ -31,8 +28,14 @@ class LuckyRouter::Matcher(T)
   end
 
   private def extract_parts(path)
-    parts = path.split("/") 
+    parts = path.split("/")
     parts.pop if parts.last.blank?
     parts
+  end
+
+  private def add_route(method : String, parts : Array(String), payload : T)
+    routes[method] ||= Hash(RoutePartsSize, Fragment(T)).new
+    routes[method][parts.size] ||= Fragment(T).new
+    routes[method][parts.size].process_parts(parts, payload)
   end
 end
