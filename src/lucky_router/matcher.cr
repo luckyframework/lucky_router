@@ -26,7 +26,7 @@ class LuckyRouter::Matcher(T)
   end
 
   private def extract_parts(path)
-    parts = path.split("/") 
+    parts = path.split("/")
     parts.pop if parts.last.blank?
     parts
   end
