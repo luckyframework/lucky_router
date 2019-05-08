@@ -90,6 +90,15 @@ describe LuckyRouter do
     params.should eq({} of String => String)
   end
 
+  it "handles params when a file extension is present" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("get", "/admin/reports/:report_id.csv", :admin_reports)
+
+    params = router.match!("get", "/admin/reports/1.csv").params
+
+    params.should eq({"report_id" => "1.csv"})
+  end
+
   it "handles conflicting routes by matching static routes first" do
     router = LuckyRouter::Matcher(Symbol).new
 

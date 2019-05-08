@@ -35,7 +35,7 @@ class LuckyRouter::PartProcessor(T)
   end
 
   private def add_dynamic_part
-    fragment.dynamic_part ||= {name: current_part.gsub(":", ""), fragment: Fragment(T).new}
+    fragment.dynamic_part ||= {name: current_part.delete(':').gsub(/\.\w+.+$/, ""), fragment: Fragment(T).new}
     fragment.dynamic_part.not_nil![:fragment].process_parts(next_parts, payload)
 
     if next_parts.empty?
