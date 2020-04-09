@@ -1,3 +1,4 @@
+require "benchmark"
 require "./spec_helper"
 
 describe LuckyRouter do
@@ -5,7 +6,7 @@ describe LuckyRouter do
     router = LuckyRouter::Matcher(Symbol).new
 
     # Here to makes sure things run super fast even with lots of routes
-    1000.times do
+    10_000.times do
       router.add("put", "#{(rand * 100).to_i}", :fake_show)
       router.add("get", "#{(rand * 100).to_i}/edit", :fake_edit)
       router.add("get", "#{(rand * 100).to_i}/new/edit", :fake_new_edit)
@@ -33,6 +34,12 @@ describe LuckyRouter do
       router.match!("get", "/users/1/new").payload.should eq :new
       router.match!("get", "/users/1/tasks/1").payload.should eq :user_tasks
       router.match!("get", "/admin/users/1/tasks/1").payload.should eq :admin_user_tasks
+    end
+
+    Benchmark.ips do |x|
+      x.report("with 3000 unique routes") do
+        router.match!("get", "/admin/users/1/tasks/1").payload.should eq :admin_user_tasks
+      end
     end
   end
 
