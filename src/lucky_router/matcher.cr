@@ -5,6 +5,24 @@ class LuckyRouter::Matcher(T)
   @routes = Hash(HttpMethod, Hash(RoutePartsSize, Fragment(T))).new
 
   def add(method : String, path : String, payload : T)
+    all_path_parts = path.split("/")
+    optional_parts = [] of String
+    all_path_parts.each do |part|
+      if part.starts_with?("?")
+        optional_parts << part.gsub("?", "")
+      end
+    end
+
+    path_without_optional_params = all_path_parts.reject(&.starts_with?("?")).join("/")
+
+    process_and_add_path(method, path_without_optional_params, payload)
+    optional_parts.each do |optional_part|
+      path_without_optional_params += "/#{optional_part}"
+      process_and_add_path(method, path_without_optional_params, payload)
+    end
+  end
+
+  private def process_and_add_path(method : String, path : String, payload : T)
     parts = extract_parts(path)
     if method.downcase == "get"
       add_route("head", parts, payload)
