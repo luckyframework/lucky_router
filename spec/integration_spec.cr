@@ -62,6 +62,24 @@ describe LuckyRouter do
     })
   end
 
+  it "allows route globbing" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("get", "/posts/something/*:glob_param", :post_index)
+
+    router.match!("get", "/posts/something/1").params.should eq({
+      "glob_param" => "1",
+    })
+
+    router.match!("get", "/posts/something/1/something/longer").params.should eq({
+      "glob_param" => "1/something/longer",
+    })
+  end
+
+  it "allows route globbing and optional parts" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("get", "/posts/something/?:optional_1/?:optional_2/*:glob_param", :post_index)
+  end
+
   it "handles root routes" do
     router = LuckyRouter::Matcher(Symbol).new
 
