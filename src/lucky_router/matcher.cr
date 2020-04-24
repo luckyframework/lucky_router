@@ -16,8 +16,7 @@
 # router.match("get", "/users").payload # :index
 # ```
 class LuckyRouter::Matcher(T)
-  getter routes
-  # aliases to help clarify what the @routes has is made of
+  getter routes, glob_routes
   alias RoutePartsSize = Int32
   alias HttpMethod = String
 
@@ -49,8 +48,14 @@ class LuckyRouter::Matcher(T)
   # So if trying to match "/users/1/foo" it will not even try because the parts
   # size does not match any of the known routes.
   @routes = Hash(HttpMethod, Hash(RoutePartsSize, Fragment(T))).new
+  @glob_routes = Hash(HttpMethod, Hash(RoutePartsSize, Fragment(T))).new
 
   def add(method : String, path : String, payload : T)
+    last_part = path.split("/").reject(&.blank?).last
+    if last_part.starts_with?("*")
+      glob_part = last_part
+    end
+
     all_path_parts = path.split("/")
     optional_parts = [] of String
     all_path_parts.each do |part|
@@ -92,9 +97,7 @@ class LuckyRouter::Matcher(T)
   end
 
   private def extract_parts(path)
-    parts = path.split("/")
-    parts.pop if parts.last.blank?
-    parts
+    path.split("/").reject(&.blank?)
   end
 
   private def add_route(method : String, parts : Array(String), payload : T)
