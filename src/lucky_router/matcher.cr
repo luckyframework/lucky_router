@@ -1,7 +1,53 @@
+# Add routes and match routes
+#
+# 'T' is the type of the 'payload'. The 'payload' is what will be returned
+# if the route matches.
+#
+# ## Example
+#
+# ```crystal
+# # 'T' will be 'Symbol'
+# router = LuckyRouter::Matcher(Symbol).new
+#
+# # Tell the router what payload to return if matched
+# router.add("get", "/users", :index)
+#
+# # This will return :index
+# router.match("get", "/users").payload # :index
+# ```
 class LuckyRouter::Matcher(T)
-  getter paths, routes
+  getter routes
+  # aliases to help clarify what the @routes has is made of
   alias RoutePartsSize = Int32
   alias HttpMethod = String
+
+  # The matcher stores routes based on the HTTP method and the number of
+  # "parts" in the path
+  #
+  # Each section in between the path is a "part". We use the method and part size
+  # to both speed up the route lookup and makes it more reliable because the router
+  # always tries to find routes that are the right size.
+  #
+  # Each route key is a `Fragment(T)`. Where `T` is the type of the payload. See
+  # `Fragment` for details on how it works
+  #
+  # ## Example
+  #
+  # ```
+  # router = LuckyRouter::Matcher(Symbol).new
+  # router.add("get", "/users/:user_id", :index)
+  #
+  # # Will make @routes look like:
+
+  # {
+  #   "get" => {
+  #     2 => Fragment(T) # The fragment for this route
+  #   }
+  # }
+  # ```
+  #
+  # So if trying to match "/users/1/foo" it will not even try because the parts
+  # size does not match any of the known routes.
   @routes = Hash(HttpMethod, Hash(RoutePartsSize, Fragment(T))).new
 
   def add(method : String, path : String, payload : T)
