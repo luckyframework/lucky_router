@@ -35,12 +35,19 @@ class LuckyRouter::PartProcessor(T)
   end
 
   private def add_dynamic_part
-    fragment.dynamic_part ||= {name: current_part.gsub(":", ""), fragment: Fragment(T).new}
-    fragment.dynamic_part.not_nil![:fragment].process_parts(next_parts, payload)
+    fragment.dynamic_part ||= Fragment::DynamicFragment.new(
+      name: current_part.gsub(":", ""),
+      fragment: Fragment(T).new
+    )
+    fragment.dynamic_part.not_nil!.fragment.process_parts(next_parts, payload)
 
-    if next_parts.empty?
+    if on_last_part?
       add_payload_to_dynamic_part
     end
+  end
+
+  def on_last_part?
+    next_parts.empty?
   end
 
   private def add_static_part
@@ -53,6 +60,6 @@ class LuckyRouter::PartProcessor(T)
   end
 
   private def add_payload_to_dynamic_part
-    fragment.dynamic_part.not_nil![:fragment].payload = payload
+    fragment.dynamic_part.not_nil!.fragment.payload = payload
   end
 end

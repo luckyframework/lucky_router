@@ -1,8 +1,19 @@
 class LuckyRouter::Fragment(T)
-  alias Name = String
+  struct DynamicFragment(T)
+    # The name of the dynamic part
+    # For example, if you have the path "/users/:id" the dynamic part
+    # name would be "id"
+    getter name
+    getter fragment
+
+    def initialize(@name : String, @fragment : Fragment(T))
+    end
+  end
+
+  alias StaticPartName = String
   property payload : T?
-  property dynamic_part : {name: String, fragment: Fragment(T)}?
-  getter static_parts = Hash(Name, Fragment(T)).new
+  property dynamic_part : DynamicFragment(T)?
+  getter static_parts = Hash(StaticPartName, Fragment(T)).new
 
   def process_parts(parts : Array(String), payload : T)
     PartProcessor(T).new(self, parts: parts, payload: payload).run
