@@ -47,7 +47,7 @@ class LuckyRouter::MatchFinder(T)
   end
 
   private def add_to_params
-    key = fragment.dynamic_part.not_nil![:name]
+    key = fragment.dynamic_part.not_nil!.name
     params[key] = current_part
   end
 
@@ -56,6 +56,6 @@ class LuckyRouter::MatchFinder(T)
   end
 
   private def dynamic_fragment
-    fragment.dynamic_part.try(&.[:fragment])
+    fragment.dynamic_part.try(&.fragment)
   end
 end
