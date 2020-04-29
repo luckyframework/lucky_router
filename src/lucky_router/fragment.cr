@@ -1,3 +1,37 @@
+# A fragment represents possible combinations for a part of the path. The first/top
+# fragment represents the first "part" of a path.
+#
+# The fragment contains the possible static parts or a single dynamic part
+# Each static part or dynamic part has another fragment, that represents the
+# next set of fragments that could match. This is a bit confusing so let's dive
+# into an example:
+#
+#  * `/users/foo`
+#  * `/users/:id`
+#  * `/posts/foo`
+#
+# The Fragment would represent the possible combinations for the first part
+#
+# ```
+# # 'nil' because there is no route with a dynamic part in the first slot
+# fragment.dynamic_part # nil
+#
+# # This returns a Hash whose keys are the possible values, and a value for the
+# *next* Fragment
+# fragment.static_parts
+#
+# # Would return:
+# {"users" => Fragment, "posts" => Fragment}
+#
+# # The Fragment in the 'users' key would have:
+#
+# # DynamicFragment.new(:id, Fragment)
+# fragment.dynamic_part
+#
+# # Static parts
+# fragment.static_parts
+# {"foo" => Fragment}
+# ```
 class LuckyRouter::Fragment(T)
   # This is a simple wrapper around Fragment, that includes holds the
   # `name` of the dynamic fragment so it can be used to populate the params hash.
@@ -13,6 +47,7 @@ class LuckyRouter::Fragment(T)
   end
 
   alias StaticPartName = String
+  # The payload is only set on the last fragment
   property payload : T?
   property dynamic_part : DynamicFragment(T)?
   getter static_parts = Hash(StaticPartName, Fragment(T)).new
