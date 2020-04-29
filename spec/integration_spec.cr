@@ -21,6 +21,7 @@ describe LuckyRouter do
     router.add("get", "/users/:id/new", :new)
     router.add("get", "/users/:user_id/tasks/:id", :user_tasks)
     router.add("get", "/admin/users/:user_id/tasks/:id", :admin_user_tasks)
+    router.add("get", "/complex_posts/:required/?:optional_1/?:optional_2", :posts_with_complex_params)
 
     1000.times do
       router.match!("get", "/posts/1").payload.should eq :post_index
@@ -33,7 +34,28 @@ describe LuckyRouter do
       router.match!("get", "/users/1/new").payload.should eq :new
       router.match!("get", "/users/1/tasks/1").payload.should eq :user_tasks
       router.match!("get", "/admin/users/1/tasks/1").payload.should eq :admin_user_tasks
+      router.match!("get", "/complex_posts/1/2/3").payload.should eq :posts_with_complex_params
+      router.match!("get", "/complex_posts/1/2").payload.should eq :posts_with_complex_params
+      router.match!("get", "/complex_posts/1").payload.should eq :posts_with_complex_params
     end
+  end
+
+  it "allows optional route params" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("get", "/posts/:required/?:optional_1/?:optional_2", :post_index)
+
+    router.match!("get", "/posts/1").params.should eq({
+      "required" => "1",
+    })
+    router.match!("get", "/posts/1/2").params.should eq({
+      "required"   => "1",
+      "optional_1" => "2",
+    })
+    router.match!("get", "/posts/1/2/3/").params.should eq({
+      "required"   => "1",
+      "optional_1" => "2",
+      "optional_2" => "3",
+    })
   end
 
   it "handles root routes" do
