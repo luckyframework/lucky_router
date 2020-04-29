@@ -7,7 +7,19 @@ on:
     branches: "*"
 
 jobs:
-  build:
+  check_format:
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: crystallang/crystal
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Format
+        run: crystal tool format --check
+
+  specs:
 
     runs-on: ubuntu-latest
 
