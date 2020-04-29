@@ -15,14 +15,14 @@ class LuckyRouter::PartProcessor(T)
   end
 
   private def process_parts
-    if named_part?
+    if dynamic_part?
       add_dynamic_part
     else
       add_static_part
     end
   end
 
-  private def named_part?
+  private def dynamic_part?
     current_part.starts_with?(":")
   end
 

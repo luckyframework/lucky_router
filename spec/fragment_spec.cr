@@ -13,9 +13,6 @@ describe LuckyRouter::Fragment do
   it "static parts after dynamic parts do not overwrite each other" do
     fragment = build_fragment
 
-    fragment.process_parts(["users"], :foo)
-    pp! fragment
-
     fragment.process_parts(["users", ":id", "edit"], :edit)
     fragment.process_parts(["users", ":id", "new"], :new)
 
