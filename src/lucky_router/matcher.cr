@@ -55,6 +55,7 @@ class LuckyRouter::Matcher(T)
     last_part = all_path_parts.last?
     if last_part && last_part.starts_with?("*")
       process_and_add_path(method, all_path_parts[0..-2].join("/"), payload)
+      process_and_add_path(method, all_path_parts[0..-2].join("/"), payload, to: @glob_routes)
     end
 
     all_path_parts = path.split("/").reject(&.starts_with?("*"))
@@ -74,13 +75,19 @@ class LuckyRouter::Matcher(T)
     end
   end
 
-  private def process_and_add_path(method : String, path : String, payload : T)
+  private def process_and_add_path(method : String, path : String, payload : T, to route_hash = @routes)
     parts = extract_parts(path)
     if method.downcase == "get"
-      add_route("head", parts, payload)
+      add_route("head", parts, payload, route_hash)
     end
 
-    add_route(method, parts, payload)
+    add_route(method, parts, payload, route_hash)
+  end
+
+  private def add_route(method : String, parts : Array(String), payload : T, route_hash = @routes)
+    route_hash[method] ||= Hash(RoutePartsSize, Fragment(T)).new
+    route_hash[method][parts.size] ||= Fragment(T).new
+    route_hash[method][parts.size].process_parts(parts, payload)
   end
 
   def match(method : String, path_to_match : String) : Match(T)?
@@ -101,11 +108,5 @@ class LuckyRouter::Matcher(T)
     parts = path.split("/")
     parts.pop if parts.last.blank?
     parts
-  end
-
-  private def add_route(method : String, parts : Array(String), payload : T)
-    routes[method] ||= Hash(RoutePartsSize, Fragment(T)).new
-    routes[method][parts.size] ||= Fragment(T).new
-    routes[method][parts.size].process_parts(parts, payload)
   end
 end
