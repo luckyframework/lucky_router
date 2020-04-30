@@ -11,6 +11,8 @@ describe LuckyRouter do
       router.add("get", "#{(rand * 100).to_i}/new/edit", :fake_new_edit)
     end
 
+    router.add("get", "/:organization", :organization)
+    router.add("get", "/:organization/:repo", :repo)
     router.add("get", "/posts/:id", :post_index)
     router.add("get", "/users", :index)
     router.add("post", "/users", :create)
@@ -24,6 +26,8 @@ describe LuckyRouter do
     router.add("get", "/complex_posts/:required/?:optional_1/?:optional_2", :posts_with_complex_params)
 
     1000.times do
+      router.match!("get", "/luckyframework").payload.should eq :organization
+      router.match!("get", "/luckyframework/lucky").payload.should eq :repo
       router.match!("get", "/posts/1").payload.should eq :post_index
       router.match!("get", "/users").payload.should eq :index
       router.match!("post", "/users").payload.should eq :create
@@ -97,6 +101,16 @@ describe LuckyRouter do
     router.match!("get", "/users/user_param/tasks/task_param").params.should eq({
       "user_id" => "user_param",
       "id"      => "task_param",
+    })
+  end
+
+  it "gets params when starting with dynamic paths" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("get", "/:organization/:repo", :unused)
+
+    router.match!("get", "/luckyframework/lucky").params.should eq({
+      "organization" => "luckyframework",
+      "repo"         => "lucky",
     })
   end
 
