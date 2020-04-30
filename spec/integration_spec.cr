@@ -64,16 +64,16 @@ describe LuckyRouter do
 
   it "allows route globbing" do
     router = LuckyRouter::Matcher(Symbol).new
-    router.add("get", "/posts/something/*:glob_param", :post_index)
+    router.add("get", "/posts/something/*", :post_index)
 
     router.match!("get", "/posts/something").params.should eq({} of String => String)
 
     router.match!("get", "/posts/something/1").params.should eq({
-      "glob_param" => "1",
+      "glob" => "1",
     })
 
     router.match!("get", "/posts/something/1/something/longer").params.should eq({
-      "glob_param" => "1/something/longer",
+      "glob" => "1/something/longer",
     })
   end
 

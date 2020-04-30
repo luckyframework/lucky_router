@@ -92,8 +92,29 @@ class LuckyRouter::Matcher(T)
 
   def match(method : String, path_to_match : String) : Match(T)?
     parts_to_match = extract_parts(path_to_match)
-    return if routes[method]?.try(&.[parts_to_match.size]?).nil?
-    match = routes[method][parts_to_match.size].find(parts_to_match)
+    match_against(routes, method, parts_to_match) || match_against_globs(method, parts_to_match)
+  end
+
+  private def match_against_globs(method, parts_to_match) : Match(T)?
+    parts_to_match = parts_to_match.reject(&.empty?)
+    parts_size = parts_to_match.size
+    parts_size.times do |i|
+      i += 1
+      parts = parts_to_match[0..(parts_size - i - 1)]
+      glob_value = parts_to_match.skip(parts_size - i).join("/")
+      possible_match = match_against(glob_routes, method, parts)
+      if possible_match.is_a?(Match)
+        possible_match.params["glob"] = glob_value
+        break possible_match
+      else
+        nil
+      end
+    end
+  end
+
+  private def match_against(route_hash, method, parts_to_match)
+    return if route_hash[method]?.try(&.[parts_to_match.size]?).nil?
+    match = route_hash[method][parts_to_match.size].find(parts_to_match)
 
     if match.is_a?(Match)
       match
