@@ -66,6 +66,8 @@ describe LuckyRouter do
     router = LuckyRouter::Matcher(Symbol).new
     router.add("get", "/posts/something/*:glob_param", :post_index)
 
+    router.match!("get", "/posts/something").params.should eq({} of String => String)
+
     router.match!("get", "/posts/something/1").params.should eq({
       "glob_param" => "1",
     })
