@@ -51,12 +51,13 @@ class LuckyRouter::Matcher(T)
   @glob_routes = Hash(HttpMethod, Hash(RoutePartsSize, Fragment(T))).new
 
   def add(method : String, path : String, payload : T)
-    last_part = path.split("/").reject(&.blank?).last?
+    all_path_parts = path.split("/").reject(&.blank?)
+    last_part = all_path_parts.last?
     if last_part && last_part.starts_with?("*")
-      glob_part = last_part
+      process_and_add_path(method, all_path_parts[0..-2].join("/"), payload)
     end
 
-    all_path_parts = path.split("/")
+    all_path_parts = path.split("/").reject(&.starts_with?("*"))
     optional_parts = [] of String
     all_path_parts.each do |part|
       if part.starts_with?("?")
@@ -93,7 +94,7 @@ class LuckyRouter::Matcher(T)
   end
 
   def match!(method : String, path_to_match : String) : Match(T)
-    match(method, path_to_match) || raise "No matching route found for: #{path_to_match}"
+    match(method, path_to_match) || raise "No matching route found for: #{method.upcase} #{path_to_match}"
   end
 
   private def extract_parts(path)
