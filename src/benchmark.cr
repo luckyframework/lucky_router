@@ -16,7 +16,7 @@ router.add("put", "/users/:id", :update)
 router.add("get", "/users/:id/edit", :edit)
 router.add("get", "/users/:id/new", :new)
 
-time = Time.now
+time = Time.utc
 
 1000.times do
   router.match!("post", "/users")
@@ -27,7 +27,7 @@ time = Time.now
   router.match!("get", "/users/1/new")
 end
 
-elapsed = Time.now - time
+elapsed = Time.utc - time
 elapsed_text = elapsed_text(elapsed)
 
 puts elapsed_text
