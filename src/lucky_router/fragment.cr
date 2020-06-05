@@ -53,16 +53,30 @@ class LuckyRouter::Fragment(T)
 
   alias StaticPartName = String
   # The payload is only set on the last fragment
-  property payload : T?
   property dynamic_part : DynamicFragment(T)?
   getter static_parts = Hash(StaticPartName, Fragment(T)).new
+  getter method_to_payload = {} of String => T
 
-  def process_parts(parts : Array(String), payload : T)
-    PartProcessor(T).new(self, parts: parts, payload: payload).run
-    self
+  def initialize(@dynamic : Bool = false)
   end
 
-  def find(parts : Array(String)) : Match(T) | NoMatch
-    MatchFinder(T).new(self, parts: parts).run
+  def dynamic?
+    @dynamic
+  end
+
+  def process_parts(parts : Array(String), payload : T, method : String)
+    PartProcessor(T).new(self, parts: parts, payload: payload, method: method).run
+  end
+
+  def find(parts : Array(String), method : String) : Match(T)?
+    MatchFinder(T).new(self, parts: parts, method: method).run
+  end
+
+  def dynamic_fragment : Fragment(T)?
+    dynamic_part.try(&.fragment)
+  end
+
+  def fragment_matching(part : StaticPartName) : Fragment(T)?
+    static_parts.fetch(part) { dynamic_fragment }
   end
 end
