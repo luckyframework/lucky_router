@@ -16,21 +16,26 @@ router.add("put", "/users/:id", :update)
 router.add("get", "/users/:id/edit", :edit)
 router.add("get", "/users/:id/new", :new)
 
-time = Time.now
-
+elapsed_times = [] of Time::Span
 1000.times do
-  router.match!("post", "/users")
-  router.match!("get", "/users/1")
-  router.match!("delete", "/users/1")
-  router.match!("put", "/users/1")
-  router.match!("get", "/users/1/edit")
-  router.match!("get", "/users/1/new")
+  time = Time.utc
+
+  1000.times do
+    router.match!("post", "/users")
+    router.match!("get", "/users/1")
+    router.match!("delete", "/users/1")
+    router.match!("put", "/users/1")
+    router.match!("get", "/users/1/edit")
+    router.match!("get", "/users/1/new")
+  end
+
+  elapsed = Time.utc - time
+  elapsed_times << elapsed
 end
 
-elapsed = Time.now - time
-elapsed_text = elapsed_text(elapsed)
-
-puts elapsed_text
+sum = elapsed_times.sum
+average = sum / elapsed_times.size
+puts "Average time: " + elapsed_text(average)
 
 private def elapsed_text(elapsed)
   minutes = elapsed.total_minutes
