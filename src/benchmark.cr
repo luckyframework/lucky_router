@@ -20,16 +20,16 @@ elapsed_times = [] of Time::Span
 1000.times do
   time = Time.utc
 
-  1000.times do
-    router.match!("post", "/users")
-    router.match!("get", "/users/1")
-    router.match!("delete", "/users/1")
-    router.match!("put", "/users/1")
-    router.match!("get", "/users/1/edit")
-    router.match!("get", "/users/1/new")
+  elapsed = Time.measure do
+    1000.times do
+      router.match!("post", "/users")
+      router.match!("get", "/users/1")
+      router.match!("delete", "/users/1")
+      router.match!("put", "/users/1")
+      router.match!("get", "/users/1/edit")
+      router.match!("get", "/users/1/new")
+    end
   end
-
-  elapsed = Time.utc - time
   elapsed_times << elapsed
 end
 
