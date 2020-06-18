@@ -18,8 +18,8 @@ class LuckyRouter::MatchFinder(T)
   def initialize(@fragment, @parts, @params = {} of String => String)
   end
 
-  # This uses the magic/pain of recursion to continue matching fragments
-  # until there is a match in the final fragment, otherwise it returns `NoMatch`
+  # This looks for a matching fragment for the given parts
+  # and returns NoMatch if one is not found
   def run : Match(T) | NoMatch
     until parts.empty?
       match = matched_fragment
