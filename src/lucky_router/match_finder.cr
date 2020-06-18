@@ -21,7 +21,7 @@ class LuckyRouter::MatchFinder(T)
   # This looks for a matching fragment for the given parts
   # and returns NoMatch if one is not found
   def run : Match(T) | NoMatch
-    until parts.empty?
+    loop do
       match = matched_fragment
       return NoMatch.new if match.nil?
 
@@ -31,6 +31,7 @@ class LuckyRouter::MatchFinder(T)
       end
       self.fragment = match
       parts.shift
+      break if parts.empty?
     end
 
     NoMatch.new
