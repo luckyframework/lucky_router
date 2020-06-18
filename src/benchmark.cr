@@ -18,8 +18,6 @@ router.add("get", "/users/:id/new", :new)
 
 elapsed_times = [] of Time::Span
 1000.times do
-  time = Time.utc
-
   elapsed = Time.measure do
     1000.times do
       router.match!("post", "/users")
