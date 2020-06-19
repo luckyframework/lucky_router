@@ -48,7 +48,7 @@ class LuckyRouter::Matcher(T)
   #
   # So if trying to match "/users/1/foo" it will not even try because the parts
   # size does not match any of the known routes.
-  @routes = Hash(HttpMethod, Hash(RoutePartsSize, Fragment(T))).new
+  @routes = Hash(HttpMethod, Fragment(T)).new
 
   def add(method : String, path : String, payload : T)
     all_path_parts = path.split("/")
@@ -79,8 +79,8 @@ class LuckyRouter::Matcher(T)
 
   def match(method : String, path_to_match : String) : Match(T)?
     parts_to_match = extract_parts(path_to_match)
-    return if routes[method]?.try(&.[parts_to_match.size]?).nil?
-    match = routes[method][parts_to_match.size].find(parts_to_match)
+    return unless routes[method]?
+    match = routes[method].find(parts_to_match)
 
     if match.is_a?(Match)
       match
@@ -98,8 +98,7 @@ class LuckyRouter::Matcher(T)
   end
 
   private def add_route(method : String, parts : Array(String), payload : T)
-    routes[method] ||= Hash(RoutePartsSize, Fragment(T)).new
-    routes[method][parts.size] ||= Fragment(T).new
-    routes[method][parts.size].process_parts(parts, payload)
+    routes[method] ||= Fragment(T).new
+    routes[method].process_parts(parts, payload)
   end
 end
