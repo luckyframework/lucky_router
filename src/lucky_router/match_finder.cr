@@ -1,5 +1,6 @@
 class LuckyRouter::MatchFinder(T)
-  private getter fragment, parts, params
+  private getter parts, params
+  private property fragment
 
   @fragment : Fragment(T)
   # The parts are the raw strings from each section of the path.
@@ -17,23 +18,23 @@ class LuckyRouter::MatchFinder(T)
   def initialize(@fragment, @parts, @params = {} of String => String)
   end
 
-  # This uses the magic/pain of recursion to continue matching fragments
-  # until there is a match in the final fragment, otherwise it returns `NoMatch`
+  # This looks for a matching fragment for the given parts
+  # and returns NoMatch if one is not found
   def run : Match(T) | NoMatch
-    add_to_params if has_param?
+    loop do
+      match = matched_fragment
+      return NoMatch.new if match.nil?
 
-    if last_part? && has_match?
-      # If we're on the last part and have a match, return the payload and params :D
-      Match(T).new(matched_fragment.not_nil!.payload.not_nil!, params)
-    elsif static_fragment
-      # Always try to match a static part before a dynamic one
-      MatchFinder(T).new(static_fragment.not_nil!, next_parts, params).run
-    elsif dynamic_fragment
-      # If no static part matches, check if the part can by dynamic
-      MatchFinder(T).new(dynamic_fragment.not_nil!, next_parts, params).run
-    else
-      NoMatch.new
+      add_to_params if has_param?
+      if last_part? && has_match?
+        return Match(T).new(matched_fragment.not_nil!.payload.not_nil!, params)
+      end
+      self.fragment = match
+      parts.shift
+      break if parts.empty?
     end
+
+    NoMatch.new
   end
 
   private def has_param?
