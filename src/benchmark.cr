@@ -17,9 +17,9 @@ router.add("get", "/users/:id/edit", :edit)
 router.add("get", "/users/:id/new", :new)
 
 elapsed_times = [] of Time::Span
-1000.times do
+10.times do
   elapsed = Time.measure do
-    1000.times do
+    100_000.times do
       router.match!("post", "/users")
       router.match!("get", "/users/1")
       router.match!("delete", "/users/1")

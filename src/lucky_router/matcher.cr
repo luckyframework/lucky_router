@@ -21,12 +21,7 @@ class LuckyRouter::Matcher(T)
   alias RoutePartsSize = Int32
   alias HttpMethod = String
 
-  # The matcher stores routes based on the HTTP method and the number of
-  # "parts" in the path
-  #
-  # Each section in between the path is a "part". We use the method and part size
-  # to both speed up the route lookup and makes it more reliable because the router
-  # always tries to find routes that are the right size.
+  # The matcher stores routes based on the HTTP method
   #
   # Each route key is a `Fragment(T)`. Where `T` is the type of the payload. See
   # `Fragment` for details on how it works
@@ -40,15 +35,13 @@ class LuckyRouter::Matcher(T)
   # # Will make @routes look like:
 
   # {
-  #   "get" => {
-  #     2 => Fragment(T) # The fragment for this route
-  #   }
+  #   "get" => Fragment(T) # The fragment for this route
   # }
   # ```
   #
-  # So if trying to match "/users/1/foo" it will not even try because the parts
-  # size does not match any of the known routes.
-  @routes = Hash(HttpMethod, Hash(RoutePartsSize, Fragment(T))).new
+  # So if trying to match a POST request it will not even try because the request
+  # method does not match any of the known routes.
+  @routes = Hash(HttpMethod, Fragment(T)).new
 
   def add(method : String, path : String, payload : T)
     all_path_parts = path.split("/")
@@ -79,8 +72,8 @@ class LuckyRouter::Matcher(T)
 
   def match(method : String, path_to_match : String) : Match(T)?
     parts_to_match = extract_parts(path_to_match)
-    return if routes[method]?.try(&.[parts_to_match.size]?).nil?
-    match = routes[method][parts_to_match.size].find(parts_to_match)
+    return unless routes[method]?
+    match = routes[method].find(parts_to_match)
 
     if match.is_a?(Match)
       match
@@ -98,8 +91,7 @@ class LuckyRouter::Matcher(T)
   end
 
   private def add_route(method : String, parts : Array(String), payload : T)
-    routes[method] ||= Hash(RoutePartsSize, Fragment(T)).new
-    routes[method][parts.size] ||= Fragment(T).new
-    routes[method][parts.size].process_parts(parts, payload)
+    routes[method] ||= Fragment(T).new
+    routes[method].process_parts(parts, payload)
   end
 end
