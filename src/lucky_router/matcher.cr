@@ -16,32 +16,10 @@
 # router.match("get", "/users").payload # :index
 # ```
 class LuckyRouter::Matcher(T)
-  getter routes
   # aliases to help clarify what the @routes has is made of
   alias RoutePartsSize = Int32
   alias HttpMethod = String
-
-  # The matcher stores routes based on the HTTP method
-  #
-  # Each route key is a `Fragment(T)`. Where `T` is the type of the payload. See
-  # `Fragment` for details on how it works
-  #
-  # ## Example
-  #
-  # ```
-  # router = LuckyRouter::Matcher(Symbol).new
-  # router.add("get", "/users/:user_id", :index)
-  #
-  # # Will make @routes look like:
-
-  # {
-  #   "get" => Fragment(T) # The fragment for this route
-  # }
-  # ```
-  #
-  # So if trying to match a POST request it will not even try because the request
-  # method does not match any of the known routes.
-  @routes = Hash(HttpMethod, Fragment(T)).new
+  getter root = Fragment(T).new
 
   def add(method : String, path : String, payload : T)
     all_path_parts = path.split("/")
@@ -64,16 +42,15 @@ class LuckyRouter::Matcher(T)
   private def process_and_add_path(method : String, path : String, payload : T)
     parts = extract_parts(path)
     if method.downcase == "get"
-      add_route("head", parts, payload)
+      root.process_parts(parts, "head", payload)
     end
 
-    add_route(method, parts, payload)
+    root.process_parts(parts, method, payload)
   end
 
   def match(method : String, path_to_match : String) : Match(T)?
     parts_to_match = extract_parts(path_to_match)
-    return unless routes[method]?
-    match = routes[method].find(parts_to_match)
+    match = root.find(parts_to_match, method)
 
     if match.is_a?(Match)
       match
@@ -88,10 +65,5 @@ class LuckyRouter::Matcher(T)
     parts = path.split("/")
     parts.pop if parts.last.blank?
     parts
-  end
-
-  private def add_route(method : String, parts : Array(String), payload : T)
-    routes[method] ||= Fragment(T).new
-    routes[method].process_parts(parts, payload)
   end
 end

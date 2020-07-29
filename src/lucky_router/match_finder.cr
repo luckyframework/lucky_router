@@ -1,5 +1,5 @@
 class LuckyRouter::MatchFinder(T)
-  private getter parts, params
+  private getter parts, params, method
   private property fragment
 
   @fragment : Fragment(T)
@@ -13,9 +13,10 @@ class LuckyRouter::MatchFinder(T)
   # it'll then create a new MatchFinder and pass ["1", "edit"], until the last
   # fragment which will have just ["edit"] as the `parts`
   @parts : Array(String)
+  @method : String
   @params : Hash(String, String)
 
-  def initialize(@fragment, @parts, @params = {} of String => String)
+  def initialize(@fragment, @parts, @method, @params = {} of String => String)
   end
 
   # This looks for a matching fragment for the given parts
@@ -27,7 +28,8 @@ class LuckyRouter::MatchFinder(T)
 
       add_to_params if has_param?
       if last_part? && has_match?
-        return Match(T).new(matched_fragment.not_nil!.payload.not_nil!, params)
+        payload = matched_fragment.not_nil!.method_to_payload[method]?
+        return payload.nil? ? NoMatch.new : Match(T).new(payload, params)
       end
       self.fragment = match
       parts.shift
