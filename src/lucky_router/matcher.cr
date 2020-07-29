@@ -19,6 +19,7 @@ class LuckyRouter::Matcher(T)
   # aliases to help clarify what the @routes has is made of
   alias RoutePartsSize = Int32
   alias HttpMethod = String
+  # starting point from which all fragments are located
   getter root = Fragment(T).new
 
   def add(method : String, path : String, payload : T)
