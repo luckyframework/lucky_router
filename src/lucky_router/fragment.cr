@@ -71,7 +71,7 @@ class LuckyRouter::Fragment(T)
   def add_part(part : String) : Fragment(T)
     if part.starts_with?(":")
       dynamic_fragment = self.dynamic_part ||= DynamicFragment(T).new(
-        name: part.gsub(":", ""),
+        name: part[1...],
         fragment: Fragment(T).new
       )
       return dynamic_fragment.fragment
