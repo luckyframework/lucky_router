@@ -59,12 +59,29 @@ class LuckyRouter::Fragment(T)
   # the final step to finding the payload is to search for a matching request method
   getter method_to_payload = Hash(String, T).new
 
-  def process_parts(parts : Array(String), method : String, payload : T)
-    PartProcessor(T).new(self, parts: parts, method: method, payload: payload).run
-    self
-  end
-
   def find(parts : Array(String), method : String) : Match(T) | NoMatch
     MatchFinder(T).new(self, parts: parts, method: method).run
+  end
+
+  def process_parts(parts : Array(String), method : String, payload : T)
+    leaf_fragment = parts.reduce(self) { |fragment, part| fragment.add_part(part) }
+    leaf_fragment.method_to_payload[method] = payload
+  end
+
+  def add_part(part : String) : Fragment(T)
+    if part.starts_with?(":")
+      dynamic_fragment = self.dynamic_part ||= create_dynamic_fragment(part)
+      dynamic_fragment.fragment
+    else
+      static_parts[part] ||= Fragment(T).new
+    end
+  end
+
+  private def create_dynamic_fragment(part : String) : DynamicFragment(T)
+    part_without_colon = part[1...]
+    DynamicFragment(T).new(
+      name: part_without_colon,
+      fragment: Fragment(T).new
+    )
   end
 end
