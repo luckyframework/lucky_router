@@ -54,35 +54,31 @@ class LuckyRouter::Fragment(T)
   alias StaticPartName = String
   property dynamic_part : DynamicFragment(T)?
   getter static_parts = Hash(StaticPartName, Fragment(T)).new
+  property dynamic : Bool = false
   # Every path can have multiple request methods
   # and since each fragment represents a request path
   # the final step to finding the payload is to search for a matching request method
   getter method_to_payload = Hash(String, T).new
 
   def find(parts : Array(String), method : String) : Match(T) | NoMatch
-    fragment = self
     params = {} of String => String
-    loop do
-      static_fragment = fragment.static_parts[parts.first]?
-      dynamic_fragment = fragment.dynamic_part.try(&.fragment)
-      match = static_fragment || dynamic_fragment
-      return NoMatch.new if match.nil?
+    result = parts.reduce(self) do |fragment, part|
+      match = fragment.find(part)
+      break if match.nil?
 
-      if dynamic_fragment && static_fragment.nil?
-        key = fragment.dynamic_part.not_nil!.name
-        params[key] = parts.first
-      end
+      params[fragment.dynamic_part.not_nil!.name] = part if match.dynamic?
 
-      if parts.size == 1
-        payload = match.method_to_payload[method]?
-        return payload.nil? ? NoMatch.new : Match(T).new(payload, params)
-      end
-      fragment = match
-      parts.shift
-      break if parts.empty?
+      match
     end
 
-    NoMatch.new
+    return NoMatch.new if result.nil?
+
+    payload = result.method_to_payload[method]?
+    return payload.nil? ? NoMatch.new : Match(T).new(payload, params)
+  end
+
+  def find(part : String) : Fragment(T)?
+    static_parts[part]? || dynamic_part.try(&.fragment)
   end
 
   def process_parts(parts : Array(String), method : String, payload : T)
@@ -99,11 +95,17 @@ class LuckyRouter::Fragment(T)
     end
   end
 
+  def dynamic?
+    dynamic
+  end
+
   private def create_dynamic_fragment(part : String) : DynamicFragment(T)
     part_without_colon = part[1...]
+    fragment = Fragment(T).new
+    fragment.dynamic = true
     DynamicFragment(T).new(
       name: part_without_colon,
-      fragment: Fragment(T).new
+      fragment: fragment
     )
   end
 end
