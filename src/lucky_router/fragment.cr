@@ -63,7 +63,7 @@ class LuckyRouter::Fragment(T)
   def find(parts : Array(String), method : String) : Match(T) | NoMatch
     params = {} of String => String
     result = parts.reduce(self) do |fragment, part|
-      match = fragment.find(part)
+      match = fragment.static_parts[part]? || fragment.dynamic_part.try(&.fragment)
       return NoMatch.new if match.nil?
 
       if match.dynamic?
@@ -76,10 +76,6 @@ class LuckyRouter::Fragment(T)
 
     payload = result.method_to_payload[method]?
     return payload.nil? ? NoMatch.new : Match(T).new(payload, params)
-  end
-
-  def find(part : String) : Fragment(T)?
-    static_parts[part]? || dynamic_part.try(&.fragment)
   end
 
   def process_parts(parts : Array(String), method : String, payload : T)
