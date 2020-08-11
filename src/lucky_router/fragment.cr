@@ -54,11 +54,13 @@ class LuckyRouter::Fragment(T)
   alias StaticPartName = String
   property dynamic_part : DynamicFragment(T)?
   getter static_parts = Hash(StaticPartName, Fragment(T)).new
-  property dynamic : Bool = false
   # Every path can have multiple request methods
   # and since each fragment represents a request path
   # the final step to finding the payload is to search for a matching request method
   getter method_to_payload = Hash(String, T).new
+
+  def initialize(@dynamic = false)
+  end
 
   def find(parts : Array(String), method : String) : Match(T) | NoMatch
     params = {} of String => String
@@ -93,16 +95,14 @@ class LuckyRouter::Fragment(T)
   end
 
   def dynamic?
-    dynamic
+    @dynamic
   end
 
   private def create_dynamic_fragment(part : String) : DynamicFragment(T)
     part_without_colon = part[1...]
-    fragment = Fragment(T).new
-    fragment.dynamic = true
     DynamicFragment(T).new(
       name: part_without_colon,
-      fragment: fragment
+      fragment: Fragment(T).new(dynamic: true)
     )
   end
 end
