@@ -60,7 +60,29 @@ class LuckyRouter::Fragment(T)
   getter method_to_payload = Hash(String, T).new
 
   def find(parts : Array(String), method : String) : Match(T) | NoMatch
-    MatchFinder(T).new(self, parts: parts, method: method).run
+    fragment = self
+    params = {} of String => String
+    loop do
+      static_fragment = fragment.static_parts[parts.first]?
+      dynamic_fragment = fragment.dynamic_part.try(&.fragment)
+      match = static_fragment || dynamic_fragment
+      return NoMatch.new if match.nil?
+
+      if dynamic_fragment && static_fragment.nil?
+        key = fragment.dynamic_part.not_nil!.name
+        params[key] = parts.first
+      end
+
+      if parts.size == 1
+        payload = match.method_to_payload[method]?
+        return payload.nil? ? NoMatch.new : Match(T).new(payload, params)
+      end
+      fragment = match
+      parts.shift
+      break if parts.empty?
+    end
+
+    NoMatch.new
   end
 
   def process_parts(parts : Array(String), method : String, payload : T)
