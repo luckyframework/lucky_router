@@ -62,7 +62,12 @@ class LuckyRouter::Fragment(T)
   def initialize(@dynamic = false)
   end
 
+  # This looks for a matching fragment for the given parts
+  # and returns NoMatch if one is not found
   def find(parts : Array(String), method : String) : Match(T) | NoMatch
+    # params are a key value pair of a path variable name matched to its value
+    # so a path like /users/:id will have a path variable name of id and
+    # a matching url of /users/456 will have a value of 456
     params = {} of String => String
     result = parts.reduce(self) do |fragment, part|
       match = fragment.static_parts[part]? || fragment.dynamic_part.try(&.fragment)
