@@ -23,11 +23,17 @@ class LuckyRouter::MatchFinder(T)
   # and returns NoMatch if one is not found
   def run : Match(T) | NoMatch
     loop do
-      match = matched_fragment
+      static_fragment = fragment.static_parts[parts.first]?
+      dynamic_fragment = fragment.dynamic_part.try(&.fragment)
+      match = static_fragment || dynamic_fragment
       return NoMatch.new if match.nil?
 
-      add_to_params if has_param?
-      if last_part?
+      if dynamic_fragment && static_fragment.nil?
+        key = fragment.dynamic_part.not_nil!.name
+        params[key] = parts.first
+      end
+
+      if parts.size == 1
         payload = match.method_to_payload[method]?
         return payload.nil? ? NoMatch.new : Match(T).new(payload, params)
       end
@@ -37,34 +43,5 @@ class LuckyRouter::MatchFinder(T)
     end
 
     NoMatch.new
-  end
-
-  private def has_param?
-    dynamic_fragment && static_fragment.nil?
-  end
-
-  private def matched_fragment
-    static_fragment || dynamic_fragment
-  end
-
-  private def last_part?
-    parts.size == 1
-  end
-
-  private def current_part
-    parts.first
-  end
-
-  private def add_to_params
-    key = fragment.dynamic_part.not_nil!.name
-    params[key] = current_part
-  end
-
-  private def static_fragment
-    fragment.static_parts[current_part]?
-  end
-
-  private def dynamic_fragment
-    fragment.dynamic_part.try(&.fragment)
   end
 end
