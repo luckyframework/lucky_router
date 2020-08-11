@@ -27,8 +27,8 @@ class LuckyRouter::MatchFinder(T)
       return NoMatch.new if match.nil?
 
       add_to_params if has_param?
-      if last_part? && has_match?
-        payload = matched_fragment.not_nil!.method_to_payload[method]?
+      if last_part?
+        payload = match.method_to_payload[method]?
         return payload.nil? ? NoMatch.new : Match(T).new(payload, params)
       end
       self.fragment = match
@@ -43,10 +43,6 @@ class LuckyRouter::MatchFinder(T)
     dynamic_fragment && static_fragment.nil?
   end
 
-  private def has_match?
-    static_fragment || dynamic_fragment
-  end
-
   private def matched_fragment
     static_fragment || dynamic_fragment
   end
@@ -57,10 +53,6 @@ class LuckyRouter::MatchFinder(T)
 
   private def current_part
     parts.first
-  end
-
-  private def next_parts
-    parts.skip(1)
   end
 
   private def add_to_params
