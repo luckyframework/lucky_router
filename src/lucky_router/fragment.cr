@@ -64,14 +64,15 @@ class LuckyRouter::Fragment(T)
     params = {} of String => String
     result = parts.reduce(self) do |fragment, part|
       match = fragment.find(part)
-      break if match.nil?
+      return NoMatch.new if match.nil?
 
-      params[fragment.dynamic_part.not_nil!.name] = part if match.dynamic?
+      if match.dynamic?
+        dynamic_name = fragment.dynamic_part.not_nil!.name
+        params[dynamic_name] = part
+      end
 
       match
     end
-
-    return NoMatch.new if result.nil?
 
     payload = result.method_to_payload[method]?
     return payload.nil? ? NoMatch.new : Match(T).new(payload, params)
