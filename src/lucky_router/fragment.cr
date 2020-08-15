@@ -58,6 +58,7 @@ class LuckyRouter::Fragment(T)
   # and since each fragment represents a request path
   # the final step to finding the payload is to search for a matching request method
   getter method_to_payload = Hash(String, T).new
+  getter? dynamic
 
   def initialize(@dynamic = false)
   end
@@ -101,10 +102,6 @@ class LuckyRouter::Fragment(T)
     else
       static_parts[part] ||= Fragment(T).new
     end
-  end
-
-  def dynamic?
-    @dynamic
   end
 
   private def create_dynamic_fragment(part : String) : DynamicFragment(T)
