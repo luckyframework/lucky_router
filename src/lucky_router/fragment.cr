@@ -71,7 +71,7 @@ class LuckyRouter::Fragment(T)
     params = {} of String => String
     result = parts.reduce(self) do |fragment, part|
       match = fragment.static_parts[part]? || fragment.dynamic_part.try(&.fragment)
-      return NoMatch.new if match.nil?
+      break NoMatch.new if match.nil?
 
       if match.dynamic?
         dynamic_name = fragment.dynamic_part.not_nil!.name
@@ -81,8 +81,12 @@ class LuckyRouter::Fragment(T)
       match
     end
 
-    payload = result.method_to_payload[method]?
-    return payload.nil? ? NoMatch.new : Match(T).new(payload, params)
+    if result.is_a?(NoMatch)
+      result
+    else
+      payload = result.method_to_payload[method]?
+      payload.nil? ? NoMatch.new : Match(T).new(payload, params)
+    end
   end
 
   def process_parts(parts : Array(String), method : String, payload : T)
