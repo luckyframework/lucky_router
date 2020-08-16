@@ -58,9 +58,36 @@ class LuckyRouter::Fragment(T)
   # and since each fragment represents a request path
   # the final step to finding the payload is to search for a matching request method
   getter method_to_payload = Hash(String, T).new
+  getter? dynamic
 
+  def initialize(@dynamic = false)
+  end
+
+  # This looks for a matching fragment for the given parts
+  # and returns NoMatch if one is not found
   def find(parts : Array(String), method : String) : Match(T) | NoMatch
-    MatchFinder(T).new(self, parts: parts, method: method).run
+    # params are a key value pair of a path variable name matched to its value
+    # so a path like /users/:id will have a path variable name of id and
+    # a matching url of /users/456 will have a value of 456
+    params = {} of String => String
+    result = parts.reduce(self) do |fragment, part|
+      match = fragment.static_parts[part]? || fragment.dynamic_part.try(&.fragment)
+      break NoMatch.new if match.nil?
+
+      if match.dynamic?
+        dynamic_name = fragment.dynamic_part.not_nil!.name
+        params[dynamic_name] = part
+      end
+
+      match
+    end
+
+    if result.is_a?(NoMatch)
+      result
+    else
+      payload = result.method_to_payload[method]?
+      payload.nil? ? NoMatch.new : Match(T).new(payload, params)
+    end
   end
 
   def process_parts(parts : Array(String), method : String, payload : T)
@@ -81,7 +108,7 @@ class LuckyRouter::Fragment(T)
     part_without_colon = part[1...]
     DynamicFragment(T).new(
       name: part_without_colon,
-      fragment: Fragment(T).new
+      fragment: Fragment(T).new(dynamic: true)
     )
   end
 end
