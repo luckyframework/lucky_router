@@ -20,7 +20,7 @@ class LuckyRouter::Matcher(T)
   alias RoutePartsSize = Int32
   alias HttpMethod = String
   # starting point from which all fragments are located
-  getter root = Fragment(T).new
+  getter root = Fragment(T).new(name: "")
 
   def add(method : String, path : String, payload : T)
     all_path_parts = path.split("/")
