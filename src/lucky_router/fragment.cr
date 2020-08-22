@@ -25,7 +25,7 @@
 #
 # # The Fragment in the 'users' key would have:
 #
-# # DynamicFragment.new(:id, Fragment)
+# # Fragment.new("id", dynamic: true)
 # fragment.dynamic_part
 #
 # # Static parts
@@ -38,29 +38,17 @@
 # The last fragment of a path is "empty". It does not have static parts or
 # dynamic parts
 class LuckyRouter::Fragment(T)
-  # This is a simple wrapper around Fragment, that includes holds the
-  # `name` of the dynamic fragment so it can be used to populate the params hash.
-  struct DynamicFragment(T)
-    # The name of the dynamic part
-    # For example, if you have the path "/users/:id" the dynamic part
-    # name would be "id"
-    getter name
-    getter fragment
-
-    def initialize(@name : String, @fragment : Fragment(T))
-    end
-  end
-
   alias StaticPartName = String
-  property dynamic_part : DynamicFragment(T)?
+  property dynamic_part : Fragment(T)?
   getter static_parts = Hash(StaticPartName, Fragment(T)).new
   # Every path can have multiple request methods
   # and since each fragment represents a request path
   # the final step to finding the payload is to search for a matching request method
   getter method_to_payload = Hash(String, T).new
   getter? dynamic
+  getter name : StaticPartName
 
-  def initialize(@dynamic = false)
+  def initialize(@name, @dynamic = false)
   end
 
   # This looks for a matching fragment for the given parts
@@ -71,8 +59,8 @@ class LuckyRouter::Fragment(T)
     # a matching url of /users/456 will have a value of 456
     params = {} of String => String
     result = parts.reduce(self) do |fragment, part|
-      match = fragment.static_parts[part]? || fragment.dynamic_part.try(&.fragment)
-      break NoMatch.new if match.nil?
+      match = fragment.static_parts[part]? || fragment.dynamic_part
+      break if match.nil?
 
       if match.dynamic?
         dynamic_name = fragment.dynamic_part.not_nil!.name
@@ -82,12 +70,8 @@ class LuckyRouter::Fragment(T)
       match
     end
 
-    if result.is_a?(NoMatch)
-      result
-    else
-      payload = result.method_to_payload[method]?
-      payload.nil? ? NoMatch.new : Match(T).new(payload, params)
-    end
+    payload = result.try(&.method_to_payload[method]?)
+    payload.nil? ? NoMatch.new : Match(T).new(payload, params)
   end
 
   def process_parts(parts : Array(String), method : String, payload : T)
@@ -97,18 +81,17 @@ class LuckyRouter::Fragment(T)
 
   def add_part(part : String) : Fragment(T)
     if part.starts_with?(":")
-      dynamic_fragment = self.dynamic_part ||= create_dynamic_fragment(part)
-      dynamic_fragment.fragment
+      self.dynamic_part ||= create_dynamic_fragment(part)
     else
-      static_parts[part] ||= Fragment(T).new
+      static_parts[part] ||= Fragment(T).new(name: part)
     end
   end
 
-  private def create_dynamic_fragment(part : String) : DynamicFragment(T)
+  private def create_dynamic_fragment(part : String) : Fragment(T)
     part_without_colon = part[1...]
-    DynamicFragment(T).new(
+    Fragment(T).new(
       name: part_without_colon,
-      fragment: Fragment(T).new(dynamic: true)
+      dynamic: true
     )
   end
 end

@@ -17,12 +17,12 @@ describe LuckyRouter::Fragment do
     fragment.process_parts(["users", ":id", "new"], "get", :new)
 
     users_fragment = fragment.static_parts["users"]
-    id_fragment = users_fragment.dynamic_part.not_nil!.fragment
+    id_fragment = users_fragment.dynamic_part.not_nil!
     id_fragment.static_parts["edit"].should_not be_nil
     id_fragment.static_parts["new"].should_not be_nil
   end
 end
 
 private def build_fragment
-  LuckyRouter::Fragment(Symbol).new
+  LuckyRouter::Fragment(Symbol).new(name: "")
 end
