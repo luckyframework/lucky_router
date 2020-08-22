@@ -21,16 +21,16 @@
 # fragment.static_parts
 #
 # # Would return:
-# {"users" => Fragment, "posts" => Fragment}
+# {PathPart("users") => Fragment, PathPart("posts") => Fragment}
 #
 # # The Fragment in the 'users' key would have:
 #
-# # Fragment.new("id", dynamic: true)
+# # Fragment.new(PathPart(":id"))
 # fragment.dynamic_part
 #
 # # Static parts
 # fragment.static_parts
-# {"foo" => Fragment}
+# {PathPart("foo") => Fragment}
 # ```
 #
 # ## Gotcha
@@ -38,22 +38,20 @@
 # The last fragment of a path is "empty". It does not have static parts or
 # dynamic parts
 class LuckyRouter::Fragment(T)
-  alias StaticPartName = String
   property dynamic_part : Fragment(T)?
-  getter static_parts = Hash(StaticPartName, Fragment(T)).new
+  getter static_parts = Hash(PathPart, Fragment(T)).new
   # Every path can have multiple request methods
   # and since each fragment represents a request path
   # the final step to finding the payload is to search for a matching request method
   getter method_to_payload = Hash(String, T).new
-  getter? dynamic
-  getter name : StaticPartName
+  getter path_part : PathPart
 
-  def initialize(@name, @dynamic = false)
+  def initialize(@path_part)
   end
 
   # This looks for a matching fragment for the given parts
   # and returns NoMatch if one is not found
-  def find(parts : Array(String), method : String) : Match(T) | NoMatch
+  def find(parts : Array(PathPart), method : String) : Match(T) | NoMatch
     # params are a key value pair of a path variable name matched to its value
     # so a path like /users/:id will have a path variable name of id and
     # a matching url of /users/456 will have a value of 456
@@ -63,8 +61,7 @@ class LuckyRouter::Fragment(T)
       break if match.nil?
 
       if match.dynamic?
-        dynamic_name = fragment.dynamic_part.not_nil!.name
-        params[dynamic_name] = part
+        params[match.path_part.name] = part.name
       end
 
       match
@@ -74,24 +71,20 @@ class LuckyRouter::Fragment(T)
     payload.nil? ? NoMatch.new : Match(T).new(payload, params)
   end
 
-  def process_parts(parts : Array(String), method : String, payload : T)
+  def process_parts(parts : Array(PathPart), method : String, payload : T)
     leaf_fragment = parts.reduce(self) { |fragment, part| fragment.add_part(part) }
     leaf_fragment.method_to_payload[method] = payload
   end
 
-  def add_part(part : String) : Fragment(T)
-    if part.starts_with?(":")
-      self.dynamic_part ||= create_dynamic_fragment(part)
+  def add_part(part : PathPart) : Fragment(T)
+    if part.path_variable?
+      self.dynamic_part ||= Fragment(T).new(path_part: part)
     else
-      static_parts[part] ||= Fragment(T).new(name: part)
+      static_parts[part] ||= Fragment(T).new(path_part: part)
     end
   end
 
-  private def create_dynamic_fragment(part : String) : Fragment(T)
-    part_without_colon = part[1...]
-    Fragment(T).new(
-      name: part_without_colon,
-      dynamic: true
-    )
+  def dynamic?
+    path_part.path_variable?
   end
 end
