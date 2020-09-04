@@ -1,9 +1,9 @@
 name: lucky_router
-version: 0.3.0
+version: 0.3.1
 
 authors:
   - Paul Smith <paulcsmith0218@gmail.com>
 
-crystal: 0.35.0
+crystal: 0.35.1
 
 license: MIT
