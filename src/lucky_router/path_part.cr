@@ -34,13 +34,19 @@ struct LuckyRouter::PathPart
   end
 
   getter part : String
-  getter name : String
-  getter? optional : Bool
-  getter? path_variable : Bool
 
   def initialize(@part)
-    @name = part.lchop('?').lchop(':')
-    @path_variable = part.starts_with?(':') || part.starts_with?("?:")
-    @optional = part.starts_with?('?')
+  end
+
+  def name
+    part.lchop('?').lchop(':')
+  end
+
+  def optional?
+    part.starts_with?('?')
+  end
+
+  def path_variable?
+    part.starts_with?(':') || part.starts_with?("?:")
   end
 end
