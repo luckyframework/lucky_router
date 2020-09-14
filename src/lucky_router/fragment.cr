@@ -21,7 +21,7 @@
 # fragment.static_parts
 #
 # # Would return:
-# {PathPart("users") => Fragment, PathPart("posts") => Fragment}
+# {"users" => Fragment, "posts" => Fragment}
 #
 # # The Fragment in the 'users' key would have:
 #
@@ -30,7 +30,7 @@
 #
 # # Static parts
 # fragment.static_parts
-# {PathPart("foo") => Fragment}
+# {"foo" => Fragment}
 # ```
 #
 # ## Gotcha
@@ -39,7 +39,7 @@
 # dynamic parts
 class LuckyRouter::Fragment(T)
   property dynamic_part : Fragment(T)?
-  getter static_parts = Hash(PathPart, Fragment(T)).new
+  getter static_parts = Hash(String, Fragment(T)).new
   # Every path can have multiple request methods
   # and since each fragment represents a request path
   # the final step to finding the payload is to search for a matching request method
@@ -51,7 +51,7 @@ class LuckyRouter::Fragment(T)
 
   # This looks for a matching fragment for the given parts
   # and returns NoMatch if one is not found
-  def find(parts : Array(PathPart), method : String) : Match(T) | NoMatch
+  def find(parts : Array(String), method : String) : Match(T) | NoMatch
     # params are a key value pair of a path variable name matched to its value
     # so a path like /users/:id will have a path variable name of id and
     # a matching url of /users/456 will have a value of 456
@@ -61,7 +61,7 @@ class LuckyRouter::Fragment(T)
       break if match.nil?
 
       if match.dynamic?
-        params[match.path_part.name] = part.name
+        params[match.path_part.name] = part
       end
 
       match
@@ -76,11 +76,11 @@ class LuckyRouter::Fragment(T)
     leaf_fragment.method_to_payload[method] = payload
   end
 
-  def add_part(part : PathPart) : Fragment(T)
-    if part.path_variable?
-      self.dynamic_part ||= Fragment(T).new(path_part: part)
+  def add_part(path_part : PathPart) : Fragment(T)
+    if path_part.path_variable?
+      self.dynamic_part ||= Fragment(T).new(path_part: path_part)
     else
-      static_parts[part] ||= Fragment(T).new(path_part: part)
+      static_parts[path_part.part] ||= Fragment(T).new(path_part: path_part)
     end
   end
 
