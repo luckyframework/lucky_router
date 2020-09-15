@@ -16,32 +16,23 @@
 # router.match("get", "/users").payload # :index
 # ```
 class LuckyRouter::Matcher(T)
-  # aliases to help clarify what the @routes has is made of
-  alias RoutePartsSize = Int32
-  alias HttpMethod = String
   # starting point from which all fragments are located
-  getter root = Fragment(T).new(name: "")
+  getter root = Fragment(T).new(path_part: PathPart.new(""))
 
   def add(method : String, path : String, payload : T)
-    all_path_parts = path.split("/")
-    optional_parts = [] of String
-    all_path_parts.each do |part|
-      if part.starts_with?("?")
-        optional_parts << part.gsub("?", "")
-      end
-    end
+    all_path_parts = PathPart.split_path(path)
+    optional_parts = all_path_parts.select(&.optional?)
 
-    path_without_optional_params = all_path_parts.reject(&.starts_with?("?")).join("/")
+    path_without_optional_params = all_path_parts.reject(&.optional?)
 
     process_and_add_path(method, path_without_optional_params, payload)
     optional_parts.each do |optional_part|
-      path_without_optional_params += "/#{optional_part}"
+      path_without_optional_params << optional_part
       process_and_add_path(method, path_without_optional_params, payload)
     end
   end
 
-  private def process_and_add_path(method : String, path : String, payload : T)
-    parts = extract_parts(path)
+  private def process_and_add_path(method : String, parts : Array(PathPart), payload : T)
     if method.downcase == "get"
       root.process_parts(parts, "head", payload)
     end
@@ -50,8 +41,9 @@ class LuckyRouter::Matcher(T)
   end
 
   def match(method : String, path_to_match : String) : Match(T)?
-    parts_to_match = extract_parts(path_to_match)
-    match = root.find(parts_to_match, method)
+    parts = path_to_match.split('/')
+    parts.pop if parts.last.blank?
+    match = root.find(parts, method)
 
     if match.is_a?(Match)
       match
@@ -60,11 +52,5 @@ class LuckyRouter::Matcher(T)
 
   def match!(method : String, path_to_match : String) : Match(T)
     match(method, path_to_match) || raise "No matching route found for: #{path_to_match}"
-  end
-
-  private def extract_parts(path)
-    parts = path.split("/")
-    parts.pop if parts.last.blank?
-    parts
   end
 end
