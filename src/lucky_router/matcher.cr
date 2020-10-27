@@ -69,6 +69,7 @@ class LuckyRouter::Matcher(T)
       if part.glob? && idx != last_index
         raise InvalidPathError.new("`#{path}` must only contain a glob at the end")
       end
+      part.validate!
     end
   end
 end

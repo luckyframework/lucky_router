@@ -55,7 +55,17 @@ struct LuckyRouter::PathPart
     part.starts_with?('*')
   end
 
+  def validate!
+    raise InvalidGlobError.new(part) if invalid_glob?
+  end
+
   private def unnamed_glob?(name)
     name.blank? && glob?
+  end
+
+  private def invalid_glob?
+    return false unless glob?
+
+    part.size != 1 && part != "*:#{name}"
   end
 end

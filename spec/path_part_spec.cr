@@ -135,4 +135,20 @@ describe LuckyRouter::PathPart do
       part_a.hash.should_not eq part_b.hash
     end
   end
+
+  describe "#validate!" do
+    it "does nothing if path part is valid" do
+      part = LuckyRouter::PathPart.new("users")
+
+      part.validate!
+    end
+
+    it "raises error if glob named incorrectly" do
+      part = LuckyRouter::PathPart.new("*users")
+
+      expect_raises(LuckyRouter::InvalidGlobError) do
+        part.validate!
+      end
+    end
+  end
 end
