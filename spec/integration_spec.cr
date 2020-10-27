@@ -176,16 +176,16 @@ describe LuckyRouter do
     router.add("get", "/posts/something/?:optional_1/?:optional_2/*:glob_param", :post_index)
 
     router.match!("get", "/posts/something/1").params.should eq({
-      "optional_1" => "1"
+      "optional_1" => "1",
     })
     router.match!("get", "/posts/something/1/2").params.should eq({
       "optional_1" => "1",
-      "optional_2" => "2"
+      "optional_2" => "2",
     })
     router.match!("get", "/posts/something/1/2/3").params.should eq({
       "optional_1" => "1",
       "optional_2" => "2",
-      "glob_param" => "3"
+      "glob_param" => "3",
     })
   end
 
