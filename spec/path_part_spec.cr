@@ -39,8 +39,14 @@ describe LuckyRouter::PathPart do
       path_part.path_variable?.should be_truthy
     end
 
-    it "is true if it is an glob path variable" do
+    it "is true if it is a glob path variable" do
       path_part = LuckyRouter::PathPart.new("*:id")
+
+      path_part.path_variable?.should be_truthy
+    end
+
+    it "is true if it is just a glob so that it will be assigned correctly" do
+      path_part = LuckyRouter::PathPart.new("*")
 
       path_part.path_variable?.should be_truthy
     end
@@ -103,6 +109,12 @@ describe LuckyRouter::PathPart do
       path_part = LuckyRouter::PathPart.new("*:id")
 
       path_part.name.should eq "id"
+    end
+
+    it "is glob if glob without path variable name" do
+      path_part = LuckyRouter::PathPart.new("*")
+
+      path_part.name.should eq "glob"
     end
   end
 

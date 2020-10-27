@@ -39,7 +39,8 @@ struct LuckyRouter::PathPart
   end
 
   def name
-    part.lchop('?').lchop('*').lchop(':')
+    name = part.lchop('?').lchop('*').lchop(':')
+    unnamed_glob?(name) ? "glob" : name
   end
 
   def optional?
@@ -47,10 +48,14 @@ struct LuckyRouter::PathPart
   end
 
   def path_variable?
-    part.starts_with?(':') || part.starts_with?("?:") || part.starts_with?("*:")
+    part.starts_with?(':') || part.starts_with?("?:") || glob?
   end
 
   def glob?
     part.starts_with?('*')
+  end
+
+  private def unnamed_glob?(name)
+    name.blank? && glob?
   end
 end
