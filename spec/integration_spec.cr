@@ -149,6 +149,13 @@ describe LuckyRouter do
     show_match.params.should eq({"id" => "123"})
   end
 
+  it "requires globs to be on the end of the path" do
+    router = LuckyRouter::Matcher(Symbol).new
+    expect_raises LuckyRouter::InvalidPathError do
+      router.add("get", "/posts/*/invalid_path", :invalid_path)
+    end
+  end
+
   describe "route with trailing slash" do
     router = LuckyRouter::Matcher(Symbol).new
     router.add("get", "/users/:id", :show)
