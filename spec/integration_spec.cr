@@ -156,6 +156,39 @@ describe LuckyRouter do
     end
   end
 
+  it "allows route globbing" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("get", "/posts/something/*", :post_index)
+
+    router.match!("get", "/posts/something").params.should eq({} of String => String)
+
+    router.match!("get", "/posts/something/1").params.should eq({
+      "glob" => "1",
+    })
+
+    router.match!("get", "/posts/something/1/something/longer").params.should eq({
+      "glob" => "1/something/longer",
+    })
+  end
+
+  it "allows route globbing and optional parts" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("get", "/posts/something/?:optional_1/?:optional_2/*:glob_param", :post_index)
+
+    router.match!("get", "/posts/something/1").params.should eq({
+      "optional_1" => "1"
+    })
+    router.match!("get", "/posts/something/1/2").params.should eq({
+      "optional_1" => "1",
+      "optional_2" => "2"
+    })
+    router.match!("get", "/posts/something/1/2/3").params.should eq({
+      "optional_1" => "1",
+      "optional_2" => "2",
+      "glob_param" => "3"
+    })
+  end
+
   describe "route with trailing slash" do
     router = LuckyRouter::Matcher(Symbol).new
     router.add("get", "/users/:id", :show)

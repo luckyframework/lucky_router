@@ -23,12 +23,20 @@ class LuckyRouter::Matcher(T)
     all_path_parts = PathPart.split_path(path)
     validate!(path, all_path_parts)
     optional_parts = all_path_parts.select(&.optional?)
+    glob_part = nil
+    if last_part = all_path_parts.last?
+      glob_part = all_path_parts.pop if last_part.glob?
+    end
 
     path_without_optional_params = all_path_parts.reject(&.optional?)
 
     process_and_add_path(method, path_without_optional_params, payload)
     optional_parts.each do |optional_part|
       path_without_optional_params << optional_part
+      process_and_add_path(method, path_without_optional_params, payload)
+    end
+    if glob_part
+      path_without_optional_params << glob_part
       process_and_add_path(method, path_without_optional_params, payload)
     end
   end
