@@ -39,7 +39,7 @@ struct LuckyRouter::PathPart
   end
 
   def name
-    part.lchop('?').lchop(':')
+    part.lchop('?').lchop('*').lchop(':')
   end
 
   def optional?
@@ -47,6 +47,10 @@ struct LuckyRouter::PathPart
   end
 
   def path_variable?
-    part.starts_with?(':') || part.starts_with?("?:")
+    part.starts_with?(':') || part.starts_with?("?:") || part.starts_with?("*:")
+  end
+
+  def glob?
+    part.starts_with?('*')
   end
 end
