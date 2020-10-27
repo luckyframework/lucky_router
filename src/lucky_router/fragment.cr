@@ -38,7 +38,7 @@
 # The last fragment of a path is "empty". It does not have static parts or
 # dynamic parts
 class LuckyRouter::Fragment(T)
-  property dynamic_part : Fragment(T)?
+  getter dynamic_parts = Array(Fragment(T)).new
   getter static_parts = Hash(String, Fragment(T)).new
   # Every path can have multiple request methods
   # and since each fragment represents a request path
@@ -52,23 +52,7 @@ class LuckyRouter::Fragment(T)
   # This looks for a matching fragment for the given parts
   # and returns NoMatch if one is not found
   def find(parts : Array(String), method : String) : Match(T) | NoMatch
-    # params are a key value pair of a path variable name matched to its value
-    # so a path like /users/:id will have a path variable name of id and
-    # a matching url of /users/456 will have a value of 456
-    params = {} of String => String
-    result = parts.reduce(self) do |fragment, part|
-      match = fragment.static_parts[part]? || fragment.dynamic_part
-      break if match.nil?
-
-      if match.dynamic?
-        params[match.path_part.name] = part
-      end
-
-      match
-    end
-
-    payload = result.try(&.method_to_payload[method]?)
-    payload.nil? ? NoMatch.new : Match(T).new(payload, params)
+    find_match(parts, method) || NoMatch.new
   end
 
   def process_parts(parts : Array(PathPart), method : String, payload : T)
@@ -78,7 +62,12 @@ class LuckyRouter::Fragment(T)
 
   def add_part(path_part : PathPart) : Fragment(T)
     if path_part.path_variable?
-      self.dynamic_part ||= Fragment(T).new(path_part: path_part)
+      existing = self.dynamic_parts.find { |fragment| fragment.path_part == path_part }
+      return existing if existing
+
+      fragment = Fragment(T).new(path_part: path_part)
+      self.dynamic_parts << fragment
+      fragment
     else
       static_parts[path_part.part] ||= Fragment(T).new(path_part: path_part)
     end
@@ -86,5 +75,33 @@ class LuckyRouter::Fragment(T)
 
   def dynamic?
     path_part.path_variable?
+  end
+
+  def find_match(path_parts : Array(String), method : String) : Match(T)?
+    if path_parts.empty?
+      payload = method_to_payload[method]?
+      return payload ? Match(T).new(payload, Hash(String, String).new) : nil
+    end
+
+    path_part = path_parts.first
+    rest = path_parts[1..]
+
+    find_match_with_static_parts(path_part, rest, method) || find_match_with_dynamics(path_part, rest, method)
+  end
+
+  private def find_match_with_static_parts(path_part, rest, method)
+    match = static_parts[path_part]?
+    return unless match
+
+    match.find_match(rest, method)
+  end
+
+  private def find_match_with_dynamics(path_part, rest, method)
+    dynamic_parts.each do |part|
+      if result = part.find_match(rest, method)
+        result.params[part.path_part.name] = path_part
+        return result
+      end
+    end
   end
 end
