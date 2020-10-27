@@ -38,6 +38,18 @@ describe LuckyRouter::PathPart do
 
       path_part.path_variable?.should be_truthy
     end
+
+    it "is true if it is a glob path variable" do
+      path_part = LuckyRouter::PathPart.new("*:id")
+
+      path_part.path_variable?.should be_truthy
+    end
+
+    it "is true if it is just a glob so that it will be assigned correctly" do
+      path_part = LuckyRouter::PathPart.new("*")
+
+      path_part.path_variable?.should be_truthy
+    end
   end
 
   describe "#optional?" do
@@ -51,6 +63,20 @@ describe LuckyRouter::PathPart do
       path_part = LuckyRouter::PathPart.new("users")
 
       path_part.optional?.should be_falsey
+    end
+  end
+
+  describe "#glob?" do
+    it "is true if starts with asterisk" do
+      path_part = LuckyRouter::PathPart.new("*")
+
+      path_part.glob?.should be_truthy
+    end
+
+    it "is false if does not start with asterisk" do
+      path_part = LuckyRouter::PathPart.new("users")
+
+      path_part.glob?.should be_falsey
     end
   end
 
@@ -78,6 +104,18 @@ describe LuckyRouter::PathPart do
 
       path_part.name.should eq "id"
     end
+
+    it "handles glob path variables" do
+      path_part = LuckyRouter::PathPart.new("*:id")
+
+      path_part.name.should eq "id"
+    end
+
+    it "is glob if glob without path variable name" do
+      path_part = LuckyRouter::PathPart.new("*")
+
+      path_part.name.should eq "glob"
+    end
   end
 
   describe "equality" do
@@ -89,12 +127,28 @@ describe LuckyRouter::PathPart do
       part_a.hash.should eq part_b.hash
     end
 
-    it "is not equal to another path par if their part is different" do
+    it "is not equal to another path part if their part is different" do
       part_a = LuckyRouter::PathPart.new("users")
       part_b = LuckyRouter::PathPart.new(":users")
 
       part_a.should_not eq part_b
       part_a.hash.should_not eq part_b.hash
+    end
+  end
+
+  describe "#validate!" do
+    it "does nothing if path part is valid" do
+      part = LuckyRouter::PathPart.new("users")
+
+      part.validate!
+    end
+
+    it "raises error if glob named incorrectly" do
+      part = LuckyRouter::PathPart.new("*users")
+
+      expect_raises(LuckyRouter::InvalidGlobError) do
+        part.validate!
+      end
     end
   end
 end

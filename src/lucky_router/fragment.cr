@@ -40,6 +40,7 @@
 class LuckyRouter::Fragment(T)
   getter dynamic_parts = Array(Fragment(T)).new
   getter static_parts = Hash(String, Fragment(T)).new
+  property glob_part : Fragment(T)?
   # Every path can have multiple request methods
   # and since each fragment represents a request path
   # the final step to finding the payload is to search for a matching request method
@@ -61,7 +62,9 @@ class LuckyRouter::Fragment(T)
   end
 
   def add_part(path_part : PathPart) : Fragment(T)
-    if path_part.path_variable?
+    if path_part.glob?
+      self.glob_part = Fragment(T).new(path_part: path_part)
+    elsif path_part.path_variable?
       existing = self.dynamic_parts.find { |fragment| fragment.path_part == path_part }
       return existing if existing
 
@@ -78,30 +81,44 @@ class LuckyRouter::Fragment(T)
   end
 
   def find_match(path_parts : Array(String), method : String) : Match(T)?
-    if path_parts.empty?
-      payload = method_to_payload[method]?
-      return payload ? Match(T).new(payload, Hash(String, String).new) : nil
-    end
+    return match_for_method(method) if path_parts.empty?
 
     path_part = path_parts.first
     rest = path_parts[1..]
 
-    find_match_with_static_parts(path_part, rest, method) || find_match_with_dynamics(path_part, rest, method)
+    find_match_with_static_parts(path_part, rest, method) ||
+      find_match_with_dynamics(path_part, rest, method) ||
+      find_match_with_glob(path_part, rest, method)
+  end
+
+  def match_for_method(method)
+    payload = method_to_payload[method]?
+    payload ? Match(T).new(payload, Hash(String, String).new) : nil
   end
 
   private def find_match_with_static_parts(path_part, rest, method)
-    match = static_parts[path_part]?
-    return unless match
+    static_part = static_parts[path_part]?
+    return unless static_part
 
-    match.find_match(rest, method)
+    static_part.find_match(rest, method)
   end
 
   private def find_match_with_dynamics(path_part, rest, method)
-    dynamic_parts.each do |part|
-      if result = part.find_match(rest, method)
-        result.params[part.path_part.name] = path_part
-        return result
+    dynamic_parts.each do |dynamic_part|
+      if match = dynamic_part.find_match(rest, method)
+        match.params[dynamic_part.path_part.name] = path_part
+        return match
       end
+    end
+  end
+
+  private def find_match_with_glob(path_part, rest, method)
+    glob = glob_part
+    return unless glob
+
+    if match = glob.match_for_method(method)
+      match.params[glob.path_part.name] = rest.unshift(path_part).join("/")
+      match
     end
   end
 end

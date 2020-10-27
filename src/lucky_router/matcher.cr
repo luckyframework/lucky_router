@@ -21,13 +21,22 @@ class LuckyRouter::Matcher(T)
 
   def add(method : String, path : String, payload : T)
     all_path_parts = PathPart.split_path(path)
+    validate!(path, all_path_parts)
     optional_parts = all_path_parts.select(&.optional?)
+    glob_part = nil
+    if last_part = all_path_parts.last?
+      glob_part = all_path_parts.pop if last_part.glob?
+    end
 
     path_without_optional_params = all_path_parts.reject(&.optional?)
 
     process_and_add_path(method, path_without_optional_params, payload)
     optional_parts.each do |optional_part|
       path_without_optional_params << optional_part
+      process_and_add_path(method, path_without_optional_params, payload)
+    end
+    if glob_part
+      path_without_optional_params << glob_part
       process_and_add_path(method, path_without_optional_params, payload)
     end
   end
@@ -52,5 +61,15 @@ class LuckyRouter::Matcher(T)
 
   def match!(method : String, path_to_match : String) : Match(T)
     match(method, path_to_match) || raise "No matching route found for: #{path_to_match}"
+  end
+
+  private def validate!(path : String, parts : Array(PathPart))
+    last_index = parts.size - 1
+    parts.each_with_index do |part, idx|
+      if part.glob? && idx != last_index
+        raise InvalidPathError.new("`#{path}` must only contain a glob at the end")
+      end
+      part.validate!
+    end
   end
 end
