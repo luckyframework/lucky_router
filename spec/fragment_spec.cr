@@ -7,7 +7,7 @@ describe LuckyRouter::Fragment do
     fragment.process_parts(build_path_parts("users", ":id"), "get", :show)
 
     users_fragment = fragment.static_parts["users"]
-    users_fragment.dynamic_part.should_not be_nil
+    users_fragment.dynamic_parts.should_not be_empty
   end
 
   it "static parts after dynamic parts do not overwrite each other" do
@@ -17,7 +17,7 @@ describe LuckyRouter::Fragment do
     fragment.process_parts(build_path_parts("users", ":id", "new"), "get", :new)
 
     users_fragment = fragment.static_parts["users"]
-    id_fragment = users_fragment.dynamic_part.not_nil!
+    id_fragment = users_fragment.dynamic_parts.first
     id_fragment.static_parts["edit"].should_not be_nil
     id_fragment.static_parts["new"].should_not be_nil
   end

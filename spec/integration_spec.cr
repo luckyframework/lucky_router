@@ -134,6 +134,21 @@ describe LuckyRouter do
     router.match!("get", "/something").payload.should eq :category_index
   end
 
+  it "handles multiple path variables at the same path level" do
+    router = LuckyRouter::Matcher(Symbol).new
+
+    router.add("get", "/users/:user_id/inventory", :index)
+    router.add("get", "/users/:id", :show)
+
+    index_match = router.match!("get", "/users/123/inventory")
+    index_match.payload.should eq :index
+    index_match.params.should eq({"user_id" => "123"})
+
+    show_match = router.match!("get", "/users/123")
+    show_match.payload.should eq :show
+    show_match.params.should eq({"id" => "123"})
+  end
+
   describe "route with trailing slash" do
     router = LuckyRouter::Matcher(Symbol).new
     router.add("get", "/users/:id", :show)
