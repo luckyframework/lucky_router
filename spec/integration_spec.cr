@@ -187,6 +187,11 @@ describe LuckyRouter do
       "optional_2" => "2",
       "glob_param" => "3",
     })
+    router.match!("get", "/posts/something/1/2/3/4").params.should eq({
+      "optional_1" => "1",
+      "optional_2" => "2",
+      "glob_param" => "3/4",
+    })
   end
 
   describe "route with trailing slash" do
