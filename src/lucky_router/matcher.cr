@@ -18,6 +18,7 @@
 class LuckyRouter::Matcher(T)
   # starting point from which all fragments are located
   getter root = Fragment(T).new(path_part: PathPart.new(""))
+  getter normalized_paths = Set(String).new
 
   def add(method : String, path : String, payload : T)
     all_path_parts = PathPart.split_path(path)
@@ -30,23 +31,31 @@ class LuckyRouter::Matcher(T)
 
     path_without_optional_params = all_path_parts.reject(&.optional?)
 
-    process_and_add_path(method, path_without_optional_params, payload)
+    process_and_add_path(method, path_without_optional_params, payload, path)
     optional_parts.each do |optional_part|
       path_without_optional_params << optional_part
-      process_and_add_path(method, path_without_optional_params, payload)
+      process_and_add_path(method, path_without_optional_params, payload, path)
     end
     if glob_part
       path_without_optional_params << glob_part
-      process_and_add_path(method, path_without_optional_params, payload)
+      process_and_add_path(method, path_without_optional_params, payload, path)
     end
   end
 
-  private def process_and_add_path(method : String, parts : Array(PathPart), payload : T)
+  private def process_and_add_path(method : String, parts : Array(PathPart), payload : T, path : String)
     if method.downcase == "get"
       root.process_parts(parts, "head", payload)
     end
 
+    duplicate_check(method, parts, path)
+
     root.process_parts(parts, method, payload)
+  end
+
+  private def duplicate_check(method : String, parts : Array(PathPart), path : String)
+    normalized_path = method.downcase + PathNormalizer.normalize(parts)
+    raise DuplicateRouteError.new(method, path) if normalized_paths.includes?(normalized_path)
+    normalized_paths << normalized_path
   end
 
   def match(method : String, path_to_match : String) : Match(T)?

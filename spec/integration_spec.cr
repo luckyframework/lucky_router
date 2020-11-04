@@ -6,9 +6,9 @@ describe LuckyRouter do
 
     # Here to makes sure things run super fast even with lots of routes
     1000.times do
-      router.add("put", "#{(rand * 100).to_i}", :fake_show)
-      router.add("get", "#{(rand * 100).to_i}/edit", :fake_edit)
-      router.add("get", "#{(rand * 100).to_i}/new/edit", :fake_new_edit)
+      router.add("put", "#{UUID.random}", :fake_show)
+      router.add("get", "#{UUID.random}/edit", :fake_edit)
+      router.add("get", "#{UUID.random}/new/edit", :fake_new_edit)
     end
 
     router.add("get", "/:organization", :organization)
@@ -195,30 +195,84 @@ describe LuckyRouter do
   end
 
   describe "route with trailing slash" do
-    router = LuckyRouter::Matcher(Symbol).new
-    router.add("get", "/users/:id", :show)
-
     context "is defined with a trailing slash" do
-      router.add("get", "/users/", :index)
-
       it "should treat it as a index route when called without a trailing slash" do
+        router = LuckyRouter::Matcher(Symbol).new
+        router.add("get", "/users/", :index)
         router.match!("get", "/users").payload.should eq :index
       end
 
       it "should treat it as a index route when called with a trailing slash" do
+        router = LuckyRouter::Matcher(Symbol).new
+        router.add("get", "/users/", :index)
         router.match!("get", "/users/").payload.should eq :index
       end
     end
 
     context "is defined without a trailing slash" do
-      router.add("get", "/users", :index)
-
       it "should treat it as a index route when called without a trailing slash" do
+        router = LuckyRouter::Matcher(Symbol).new
+        router.add("get", "/users", :index)
         router.match!("get", "/users").payload.should eq :index
       end
 
       it "should treat it as a index route when called with a trailing slash" do
+        router = LuckyRouter::Matcher(Symbol).new
+        router.add("get", "/users", :index)
         router.match!("get", "/users/").payload.should eq :index
+      end
+    end
+  end
+
+  describe "duplicate route checking" do
+    it "raises on normal duplicate" do
+      router = LuckyRouter::Matcher(Symbol).new
+      router.add("get", "/posts/something", :post_index)
+
+      expect_raises LuckyRouter::DuplicateRouteError do
+        router.add("get", "/posts/something", :other_post_index)
+      end
+    end
+
+    it "does not raise on duplicate path with different methods" do
+      router = LuckyRouter::Matcher(Symbol).new
+      router.add("get", "/posts/something", :post_index)
+      router.add("post", "/posts/something", :create_something)
+    end
+
+    it "raises even if path variable is different" do
+      router = LuckyRouter::Matcher(Symbol).new
+      router.add("get", "/posts/:id", :post_show)
+
+      expect_raises LuckyRouter::DuplicateRouteError do
+        router.add("get", "/posts/:post_id", :other_post_show)
+      end
+    end
+
+    it "raises on optional paths when pre-existing path does not have optional part" do
+      router = LuckyRouter::Matcher(Symbol).new
+      router.add("get", "/posts", :post_index)
+
+      expect_raises LuckyRouter::DuplicateRouteError do
+        router.add("get", "/posts/?something", :post_something)
+      end
+    end
+
+    it "raises on optional paths when pre-existing path has optional part" do
+      router = LuckyRouter::Matcher(Symbol).new
+      router.add("get", "/posts/something", :post_something)
+
+      expect_raises LuckyRouter::DuplicateRouteError do
+        router.add("get", "/posts/?something", :post_something_maybe)
+      end
+    end
+
+    it "raises on glob routes if path without glob matches pre-existing" do
+      router = LuckyRouter::Matcher(Symbol).new
+      router.add("get", "/posts", :post_index)
+
+      expect_raises LuckyRouter::DuplicateRouteError do
+        router.add("get", "/posts/*", :post_glob)
       end
     end
   end
