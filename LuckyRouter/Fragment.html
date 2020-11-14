@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Crystal Docs 0.34.0">
+<meta name="crystal_docs.project_version" content="0.3.1">
+<meta name="crystal_docs.project_name" content="lucky_router">
+
+
+<link href="../css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../js/doc.js"></script>
+
+<svg class="hidden">
+  <symbol id="octicon-link" viewBox="0 0 16 16">
+    <path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
+  </symbol>
+</svg>
+
+  <meta id="repository-name" content="lucky_router">
+  <title>LuckyRouter::Fragment(T) - lucky_router 0.3.1</title>
+  <script type="text/javascript">
+    CrystalDocs.base_path = "../";
+  </script>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="project-summary">
+      <h1 class="project-name">
+        <a href="../index.html">
+          lucky_router
+        </a>
+      </h1>
+
+      <span class="project-version">
+        0.3.1
+      </span>
+    </div>
+  </div>
+
+  <div class="search-results" class="hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class="parent open current" data-id="lucky_router/LuckyRouter" data-name="luckyrouter">
+      <a href="../LuckyRouter.html">LuckyRouter</a>
+      
+        <ul>
+  
+  <li class=" current" data-id="lucky_router/LuckyRouter/Fragment" data-name="luckyrouter::fragment(t)">
+      <a href="../LuckyRouter/Fragment.html">Fragment</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/InvalidGlobError" data-name="luckyrouter::invalidgloberror">
+      <a href="../LuckyRouter/InvalidGlobError.html">InvalidGlobError</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/InvalidPathError" data-name="luckyrouter::invalidpatherror">
+      <a href="../LuckyRouter/InvalidPathError.html">InvalidPathError</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/LuckyRouterError" data-name="luckyrouter::luckyroutererror">
+      <a href="../LuckyRouter/LuckyRouterError.html">LuckyRouterError</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/Match" data-name="luckyrouter::match(t)">
+      <a href="../LuckyRouter/Match.html">Match</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/Matcher" data-name="luckyrouter::matcher(t)">
+      <a href="../LuckyRouter/Matcher.html">Matcher</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/NoMatch" data-name="luckyrouter::nomatch">
+      <a href="../LuckyRouter/NoMatch.html">NoMatch</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/PathPart" data-name="luckyrouter::pathpart">
+      <a href="../LuckyRouter/PathPart.html">PathPart</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<h1 class="type-name">
+
+  <span class="kind">class</span> LuckyRouter::Fragment(T)
+
+</h1>
+
+
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../LuckyRouter/Fragment.html">LuckyRouter::Fragment(T)</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+
+
+
+
+  <h2>
+    <a id="overview" class="anchor" href="#overview">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Overview
+  </h2>
+
+  <p>A fragment represents possible combinations for a part of the path. The first/top
+fragment represents the first "part" of a path.</p>
+
+<p>The fragment contains the possible static parts or a single dynamic part
+Each static part or dynamic part has another fragment, that represents the
+next set of fragments that could match. This is a bit confusing so let's dive
+into an example:</p>
+
+<ul><li><code>/users/foo</code></li><li><code>/users/:id</code></li><li><code>/posts/foo</code></li></ul>
+
+<p>The Fragment would represent the possible combinations for the first part</p>
+
+<pre><code><span class="c"># &#39;nil&#39; because there is no route with a dynamic part in the first slot</span>
+fragment.dynamic_part <span class="c"># nil</span>
+
+<span class="c"># This returns a Hash whose keys are the possible values, and a value for the</span>
+<span class="o">*</span><span class="k">next</span><span class="o">*</span> <span class="t">Fragment</span>
+fragment.static_parts
+
+<span class="c"># Would return:</span>
+{<span class="s">&quot;users&quot;</span> => <span class="t">Fragment</span>, <span class="s">&quot;posts&quot;</span> => <span class="t">Fragment</span>}
+
+<span class="c"># The Fragment in the &#39;users&#39; key would have:</span>
+
+<span class="c"># Fragment.new(PathPart(&quot;:id&quot;))</span>
+fragment.dynamic_part
+
+<span class="c"># Static parts</span>
+fragment.static_parts
+{<span class="s">&quot;foo&quot;</span> => <span class="t">Fragment</span>}</code></pre>
+
+<h2><a id="gotcha" class="anchor" href="#gotcha">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Gotcha</h2>
+
+<p>The last fragment of a path is "empty". It does not have static parts or
+dynamic parts</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2>
+    <a id="defined-in" class="anchor" href="#defined-in">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Defined in:
+  </h2>
+  
+
+
+
+
+
+  <h2>
+    <a id="constructors" class="anchor" href="#constructors">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructors
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#new(path_part)-class-method" class="signature"><strong>.new</strong>(path_part)</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+
+
+  <h2>
+    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#add_part(path_part:PathPart):Fragment(T)-instance-method" class="signature"><strong>#add_part</strong>(path_part : PathPart) : Fragment(T)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#dynamic?-instance-method" class="signature"><strong>#dynamic?</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#dynamic_parts-instance-method" class="signature"><strong>#dynamic_parts</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#find(parts:Array(String),method:String):Match(T)%7CNoMatch-instance-method" class="signature"><strong>#find</strong>(parts : Array(String), method : String) : Match(T) | NoMatch</a>
+        
+          <div class="summary"><p>This looks for a matching fragment for the given parts and returns NoMatch if one is not found</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#find_match(path_parts:Array(String),method:String):Match(T)?-instance-method" class="signature"><strong>#find_match</strong>(path_parts : Array(String), method : String) : Match(T)?</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#glob_part:Fragment(T)?-instance-method" class="signature"><strong>#glob_part</strong> : Fragment(T)?</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#glob_part=(glob_part:Fragment(T)?)-instance-method" class="signature"><strong>#glob_part=</strong>(glob_part : Fragment(T)?)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match_for_method(method)-instance-method" class="signature"><strong>#match_for_method</strong>(method)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#method_to_payload-instance-method" class="signature"><strong>#method_to_payload</strong></a>
+        
+          <div class="summary"><p>Every path can have multiple request methods and since each fragment represents a request path the final step to finding the payload is to search for a matching request method</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#path_part:PathPart-instance-method" class="signature"><strong>#path_part</strong> : PathPart</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#process_parts(parts:Array(PathPart),method:String,payload:T)-instance-method" class="signature"><strong>#process_parts</strong>(parts : Array(PathPart), method : String, payload : T)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#static_parts-instance-method" class="signature"><strong>#static_parts</strong></a>
+        
+      </li>
+    
+  </ul>
+
+
+
+
+
+<div class="methods-inherited">
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+</div>
+
+
+  <h2>
+    <a id="constructor-detail" class="anchor" href="#constructor-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructor Detail
+  </h2>
+  
+    <div class="entry-detail" id="new(path_part)-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(path_part)
+
+        <a class="method-permalink" href="#new(path_part)-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+
+
+
+
+
+  <h2>
+    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="add_part(path_part:PathPart):Fragment(T)-instance-method">
+      <div class="signature">
+        
+        def <strong>add_part</strong>(path_part : <a href="../LuckyRouter/PathPart.html">PathPart</a>) : <a href="../LuckyRouter/Fragment.html">Fragment</a>(T)
+
+        <a class="method-permalink" href="#add_part(path_part:PathPart):Fragment(T)-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="dynamic?-instance-method">
+      <div class="signature">
+        
+        def <strong>dynamic?</strong>
+
+        <a class="method-permalink" href="#dynamic?-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="dynamic_parts-instance-method">
+      <div class="signature">
+        
+        def <strong>dynamic_parts</strong>
+
+        <a class="method-permalink" href="#dynamic_parts-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="find(parts:Array(String),method:String):Match(T)|NoMatch-instance-method">
+      <div class="signature">
+        
+        def <strong>find</strong>(parts : Array(String), method : String) : <a href="../LuckyRouter/Match.html">Match</a>(T) | <a href="../LuckyRouter/NoMatch.html">NoMatch</a>
+
+        <a class="method-permalink" href="#find(parts:Array(String),method:String):Match(T)%7CNoMatch-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>This looks for a matching fragment for the given parts
+and returns NoMatch if one is not found</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="find_match(path_parts:Array(String),method:String):Match(T)?-instance-method">
+      <div class="signature">
+        
+        def <strong>find_match</strong>(path_parts : Array(String), method : String) : <a href="../LuckyRouter/Match.html">Match</a>(T)?
+
+        <a class="method-permalink" href="#find_match(path_parts:Array(String),method:String):Match(T)?-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="glob_part:Fragment(T)?-instance-method">
+      <div class="signature">
+        
+        def <strong>glob_part</strong> : <a href="../LuckyRouter/Fragment.html">Fragment</a>(T)?
+
+        <a class="method-permalink" href="#glob_part:Fragment(T)?-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="glob_part=(glob_part:Fragment(T)?)-instance-method">
+      <div class="signature">
+        
+        def <strong>glob_part=</strong>(glob_part : <a href="../LuckyRouter/Fragment.html">Fragment</a>(T)?)
+
+        <a class="method-permalink" href="#glob_part=(glob_part:Fragment(T)?)-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match_for_method(method)-instance-method">
+      <div class="signature">
+        
+        def <strong>match_for_method</strong>(method)
+
+        <a class="method-permalink" href="#match_for_method(method)-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="method_to_payload-instance-method">
+      <div class="signature">
+        
+        def <strong>method_to_payload</strong>
+
+        <a class="method-permalink" href="#method_to_payload-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Every path can have multiple request methods
+and since each fragment represents a request path
+the final step to finding the payload is to search for a matching request method</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="path_part:PathPart-instance-method">
+      <div class="signature">
+        
+        def <strong>path_part</strong> : <a href="../LuckyRouter/PathPart.html">PathPart</a>
+
+        <a class="method-permalink" href="#path_part:PathPart-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="process_parts(parts:Array(PathPart),method:String,payload:T)-instance-method">
+      <div class="signature">
+        
+        def <strong>process_parts</strong>(parts : Array(<a href="../LuckyRouter/PathPart.html">PathPart</a>), method : String, payload : T)
+
+        <a class="method-permalink" href="#process_parts(parts:Array(PathPart),method:String,payload:T)-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="static_parts-instance-method">
+      <div class="signature">
+        
+        def <strong>static_parts</strong>
+
+        <a class="method-permalink" href="#static_parts-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+
+
+
+
+</div>
+
+</body>
+</html>
