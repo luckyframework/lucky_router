@@ -25,5 +25,13 @@ describe LuckyRouter::PathNormalizer do
 
       result.should eq("/users/name")
     end
+
+    it "removes question mark and gives generic name to optional path variables" do
+      path_parts = LuckyRouter::PathPart.split_path("/users/?:name")
+
+      result = LuckyRouter::PathNormalizer.normalize(path_parts)
+
+      result.should eq("/users/:path_variable")
+    end
   end
 end
