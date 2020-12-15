@@ -1,14 +1,13 @@
 name: lucky_router
-version: 0.3.1
+version: 0.4.0
 
 authors:
   - Paul Smith <paulcsmith0218@gmail.com>
 
 crystal: 0.35.1
-
 license: MIT
 
 development_dependencies:
   ameba:
     github: crystal-ameba/ameba
-    version: ~> 0.13.1
+    version: ~> 0.13
