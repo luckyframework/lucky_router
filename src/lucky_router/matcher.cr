@@ -18,7 +18,7 @@
 class LuckyRouter::Matcher(T)
   # starting point from which all fragments are located
   getter root = Fragment(T).new(path_part: PathPart.new(""))
-  getter normalized_paths = Set(String).new
+  getter normalized_paths = Hash(String, String).new
 
   def add(method : String, path : String, payload : T)
     all_path_parts = PathPart.split_path(path)
@@ -54,8 +54,14 @@ class LuckyRouter::Matcher(T)
 
   private def duplicate_check(method : String, parts : Array(PathPart), path : String)
     normalized_path = method.downcase + PathNormalizer.normalize(parts)
-    raise DuplicateRouteError.new(method, path) if normalized_paths.includes?(normalized_path)
-    normalized_paths << normalized_path
+    if duplicated_path = normalized_paths[normalized_path]?
+      raise DuplicateRouteError.new(
+        method,
+        new_path: path,
+        duplicated_path: duplicated_path
+      )
+    end
+    normalized_paths[normalized_path] = path
   end
 
   def match(method : String, path_to_match : String) : Match(T)?

@@ -12,8 +12,16 @@ module LuckyRouter
   end
 
   class DuplicateRouteError < LuckyRouterError
-    def initialize(method, path)
-      super "Router already contains a route matching a #{method.upcase} request to `#{path}`."
+    def initialize(method, new_path, duplicated_path)
+      super <<-ERROR
+      A route was attempted to be added that would overlap with an existing route.
+
+        Route to be added: #{method.upcase} #{new_path}
+        Existing route:    #{method.upcase} #{duplicated_path}
+
+      One of the routes should be updated to avoid the overlap.
+
+      ERROR
     end
   end
 end
