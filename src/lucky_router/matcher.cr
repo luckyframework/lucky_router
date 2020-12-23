@@ -54,7 +54,13 @@ class LuckyRouter::Matcher(T)
 
   private def duplicate_check(method : String, parts : Array(PathPart), path : String)
     normalized_path = method.downcase + PathNormalizer.normalize(parts)
-    raise DuplicateRouteError.new(method, path) if normalized_paths.has_key?(normalized_path)
+    if duplicated_path = normalized_paths[normalized_path]?
+      raise DuplicateRouteError.new(
+        method,
+        new_path: path,
+        duplicated_path: duplicated_path
+      )
+    end
     normalized_paths[normalized_path] = path
   end
 
