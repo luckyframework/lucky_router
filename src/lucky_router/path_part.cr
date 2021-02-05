@@ -2,7 +2,7 @@
 #
 # It can be a static path
 #
-# ```crystal
+# ```
 # path_part = PathPart.new("users")
 # path_part.path_variable? => false
 # path_part.optional? => false
@@ -11,7 +11,7 @@
 #
 # It can be a path variable
 #
-# ```crystal
+# ```
 # path_part = PathPart.new(":id")
 # path_part.path_variable? => true
 # path_part.optional? => false
@@ -20,7 +20,7 @@
 #
 # It can be optional
 #
-# ```crystal
+# ```
 # path_part = PathPart.new("?users")
 # path_part.path_variable? => false
 # path_part.optional? => true
