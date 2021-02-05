@@ -5,7 +5,7 @@
 #
 # ## Example
 #
-# ```crystal
+# ```
 # # 'T' will be 'Symbol'
 # router = LuckyRouter::Matcher(Symbol).new
 #
