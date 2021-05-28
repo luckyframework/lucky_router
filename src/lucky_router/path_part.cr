@@ -1,3 +1,5 @@
+require "uri"
+
 # A PathPart represents a single section of a path
 #
 # It can be a static path
@@ -35,7 +37,8 @@ struct LuckyRouter::PathPart
 
   getter part : String
 
-  def initialize(@part)
+  def initialize(part)
+    @part = URI.decode(part)
   end
 
   def name

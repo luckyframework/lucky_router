@@ -18,6 +18,15 @@ describe LuckyRouter::PathPart do
       path_parts[0].part.should eq ""
       path_parts[1].part.should eq "users"
     end
+
+    it "decodes path parts" do
+      path_parts = LuckyRouter::PathPart.split_path("/users/foo%40example.com")
+
+      path_parts.size.should eq 3
+      path_parts[0].part.should eq ""
+      path_parts[1].part.should eq "users"
+      path_parts[2].part.should eq "foo@example.com"
+    end
   end
 
   describe "#path_variable?" do
