@@ -1,3 +1,5 @@
+require "uri"
+
 # Add routes and match routes
 #
 # 'T' is the type of the 'payload'. The 'payload' is what will be returned
@@ -67,6 +69,7 @@ class LuckyRouter::Matcher(T)
   def match(method : String, path_to_match : String) : Match(T)?
     parts = path_to_match.split('/')
     parts.pop if parts.last.blank?
+    parts.map! &->URI.decode(String)
     match = root.find(parts, method)
 
     if match.is_a?(Match)
