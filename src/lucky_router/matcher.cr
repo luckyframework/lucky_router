@@ -65,8 +65,7 @@ class LuckyRouter::Matcher(T)
   end
 
   def match(method : String, path_to_match : String) : Match(T)?
-    parts = path_to_match.split('/')
-    parts.pop if parts.last.blank?
+    parts = LuckerRouter::PathReader.new(path_to_match).to_a
     match = root.find(parts, method)
 
     if match.is_a?(Match)

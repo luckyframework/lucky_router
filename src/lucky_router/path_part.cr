@@ -28,9 +28,8 @@
 # ```
 struct LuckyRouter::PathPart
   def self.split_path(path : String) : Array(PathPart)
-    parts = path.split('/')
-    parts.pop if parts.last.blank?
-    parts.map { |part| new(part) }
+    parts = LuckerRouter::PathReader.new(path)
+    parts.map { |part| new(part) }.to_a
   end
 
   getter part : String

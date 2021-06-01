@@ -276,4 +276,13 @@ describe LuckyRouter do
       end
     end
   end
+
+  it "URI decodes path parts" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("get", "/users/:email/tasks", :show)
+
+    router.match!("get", "/users/foo%40example.com/tasks").params.should eq({
+      "email" => "foo@example.com",
+    })
+  end
 end
