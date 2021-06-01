@@ -13,7 +13,7 @@
 <script type="text/javascript" src="../js/doc.js"></script>
 
   <meta name="repository-name" content="lucky_router">
-  <title>LuckyRouter::DuplicateRouteError - lucky_router 0.4.2</title>
+  <title>LuckerRouter::PathReader - lucky_router 0.4.2</title>
   <script type="text/javascript">
     CrystalDocs.base_path = "../";
   </script>
@@ -51,12 +51,12 @@
   <div class="types-list">
     <ul>
   
-  <li class="parent " data-id="lucky_router/LuckerRouter" data-name="luckerrouter">
+  <li class="parent open current" data-id="lucky_router/LuckerRouter" data-name="luckerrouter">
       <a href="../LuckerRouter.html">LuckerRouter</a>
       
         <ul>
   
-  <li class=" " data-id="lucky_router/LuckerRouter/PathReader" data-name="luckerrouter::pathreader">
+  <li class=" current" data-id="lucky_router/LuckerRouter/PathReader" data-name="luckerrouter::pathreader">
       <a href="../LuckerRouter/PathReader.html">PathReader</a>
       
     </li>
@@ -66,12 +66,12 @@
       
     </li>
   
-  <li class="parent open current" data-id="lucky_router/LuckyRouter" data-name="luckyrouter">
+  <li class="parent " data-id="lucky_router/LuckyRouter" data-name="luckyrouter">
       <a href="../LuckyRouter.html">LuckyRouter</a>
       
         <ul>
   
-  <li class=" current" data-id="lucky_router/LuckyRouter/DuplicateRouteError" data-name="luckyrouter::duplicaterouteerror">
+  <li class=" " data-id="lucky_router/LuckyRouter/DuplicateRouteError" data-name="luckyrouter::duplicaterouteerror">
       <a href="../LuckyRouter/DuplicateRouteError.html">DuplicateRouteError</a>
       
     </li>
@@ -135,19 +135,55 @@
 <div class="main-content">
 <h1 class="type-name">
 
-  <span class="kind">class</span> LuckyRouter::DuplicateRouteError
+  <span class="kind">class</span> LuckerRouter::PathReader
 
 </h1>
 
 
-  <ul class="superclass-hierarchy"><li class="superclass"><a href="../LuckyRouter/DuplicateRouteError.html">LuckyRouter::DuplicateRouteError</a></li><li class="superclass"><a href="../LuckyRouter/LuckyRouterError.html">LuckyRouter::LuckyRouterError</a></li><li class="superclass">Exception</li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../LuckerRouter/PathReader.html">LuckerRouter::PathReader</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+
+
+
+
+  <h2>
+    <a id="overview" class="anchor" href="#overview">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Overview
+  </h2>
+
+  <p>A PathReader parses a URI path into segments.</p>
+
+<p>It can be used to read a String representing a full path into the individual
+segments it contains.</p>
+
+<pre><code class="language-crystal">path <span class="o">=</span> <span class="s">&quot;/foo/bar/baz&quot;</span>
+<span class="t">PathReader</span>.<span class="k">new</span>(path).to_a => [<span class="s">&quot;&quot;</span>, <span class="s">&quot;foo&quot;</span>, <span class="s">&quot;bar&quot;</span>, <span class="s">&quot;baz&quot;</span>]</code></pre>
+
+<p>Percent-encoded characters are automatically decoded following segmentation</p>
+
+<pre><code class="language-crystal">path <span class="o">=</span> <span class="s">&quot;/user/foo%40example.com/details&quot;</span>
+<span class="t">PathReader</span>.<span class="k">new</span>(path).to_a => [<span class="s">&quot;&quot;</span>, <span class="s">&quot;user&quot;</span>, <span class="s">&quot;foo@example.com&quot;</span>, <span class="s">&quot;details&quot;</span>]</code></pre>
 
 
 
 
 
-
-
+  <h2>
+    <a id="included-modules" class="anchor" href="#included-modules">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Included Modules
+  </h2>
+  <ul class="other-types-list">
+    
+      <li class="other-type">Enumerable(String)</li>
+    
+  </ul>
 
 
 
@@ -183,7 +219,7 @@
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#new(method,new_path,duplicated_path)-class-method" class="signature"><strong>.new</strong>(method, new_path, duplicated_path)</a>
+        <a href="#new(path:String)-class-method" class="signature"><strong>.new</strong>(path : String)</a>
         
       </li>
     
@@ -193,21 +229,30 @@
 
 
 
+  <h2>
+    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#each(&)-instance-method" class="signature"><strong>#each</strong>(&)</a>
+        
+          <div class="summary"><p>Must yield this collection's elements to the block.</p></div>
+        
+      </li>
+    
+  </ul>
+
 
 
 
 
 <div class="methods-inherited">
-  
-    
-
-
-    
-
-
-    
-
-
   
     
 
@@ -251,12 +296,12 @@
     Constructor Detail
   </h2>
   
-    <div class="entry-detail" id="new(method,new_path,duplicated_path)-class-method">
+    <div class="entry-detail" id="new(path:String)-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>(method, new_path, duplicated_path)
+        def self.<strong>new</strong>(path : String)
 
-        <a class="method-permalink" href="#new(method,new_path,duplicated_path)-class-method">#</a>
+        <a class="method-permalink" href="#new(path:String)-class-method">#</a>
       </div>
       
       <br/>
@@ -269,6 +314,39 @@
 
 
 
+
+  <h2>
+    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="each(&)-instance-method">
+      <div class="signature">
+        
+        def <strong>each</strong>(&)
+
+        <a class="method-permalink" href="#each(&)-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from module Enumerable(String)
+            </div>
+          
+          <p>Must yield this collection's elements to the block.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
 
 
 
