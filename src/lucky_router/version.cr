@@ -1,3 +1,4 @@
 module LuckyRouter
-  VERSION = "0.4.2"
+  # The current LuckyRouter version is defined in `shard.yml`
+  VERSION = {{ `shards version "#{__DIR__}"`.chomp.stringify }}
 end
