@@ -17,7 +17,7 @@ require "uri"
 # path = "/user/foo%40example.com/details"
 # PathReader.new(path).to_a => ["", "user", "foo@example.com", "details"]
 # ```
-class LuckerRouter::PathReader
+struct LuckerRouter::PathReader
   include Enumerable(String)
 
   def initialize(@path : String)

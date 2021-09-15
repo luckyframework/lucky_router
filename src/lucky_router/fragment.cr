@@ -81,14 +81,7 @@ class LuckyRouter::Fragment(T)
   end
 
   def find_match(path_parts : Array(String), method : String) : Match(T)?
-    return match_for_method(method) if path_parts.empty?
-
-    path_part = path_parts.first
-    rest = path_parts[1..]
-
-    find_match_with_static_parts(path_part, rest, method) ||
-      find_match_with_dynamics(path_part, rest, method) ||
-      find_match_with_glob(path_part, rest, method)
+    find_match(path_parts, 0, method)
   end
 
   def match_for_method(method)
@@ -96,28 +89,40 @@ class LuckyRouter::Fragment(T)
     payload ? Match(T).new(payload, Hash(String, String).new) : nil
   end
 
-  private def find_match_with_static_parts(path_part, rest, method)
+  protected def find_match(path_parts : Array(String), index : Int32, method : String) : Match(T)?
+    return match_for_method(method) if index >= path_parts.size
+
+    path_part = path_parts[index]
+
+    index += 1
+
+    find_match_with_static_parts(path_part, path_parts, index, method) ||
+      find_match_with_dynamics(path_part, path_parts, index, method) ||
+      find_match_with_glob(path_part, path_parts, index, method)
+  end
+
+  private def find_match_with_static_parts(path_part, path_parts, index, method)
     static_part = static_parts[path_part]?
     return unless static_part
 
-    static_part.find_match(rest, method)
+    static_part.find_match(path_parts, index, method)
   end
 
-  private def find_match_with_dynamics(path_part, rest, method)
+  private def find_match_with_dynamics(path_part, path_parts, index, method)
     dynamic_parts.each do |dynamic_part|
-      if match = dynamic_part.find_match(rest, method)
+      if match = dynamic_part.find_match(path_parts, index, method)
         match.params[dynamic_part.path_part.name] = path_part
         return match
       end
     end
   end
 
-  private def find_match_with_glob(path_part, rest, method)
+  private def find_match_with_glob(path_part, path_parts, index, method)
     glob = glob_part
     return unless glob
 
     if match = glob.match_for_method(method)
-      match.params[glob.path_part.name] = rest.unshift(path_part).join("/")
+      match.params[glob.path_part.name] = path_parts[index..].unshift(path_part).join("/")
       match
     end
   end
