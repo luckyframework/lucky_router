@@ -67,7 +67,7 @@ class LuckyRouter::Matcher(T)
   def match(method : String, path_to_match : String) : Match(T)?
     # To avoid allocating an array for the segment parts, we use a static
     # array with up to 16 segments.
-    parts_static_array = uninitialized StaticArray(String, 16)
+    parts_static_array = StaticArray(String, 16).new("")
 
     # In the general case we still have to support more than 16 segments.
     # We'll fallback to using an Array for that case.
