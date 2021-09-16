@@ -53,6 +53,11 @@ class LuckyRouter::Fragment(T)
   # This looks for a matching fragment for the given parts
   # and returns NoMatch if one is not found
   def find(parts : Array(String), method : String) : Match(T) | NoMatch
+    find(Slice.new(parts.to_unsafe, parts.size), method)
+  end
+
+  # :ditto:
+  def find(parts : Slice(String), method : String) : Match(T) | NoMatch
     find_match(parts, method) || NoMatch.new
   end
 
@@ -80,7 +85,7 @@ class LuckyRouter::Fragment(T)
     path_part.path_variable?
   end
 
-  def find_match(path_parts : Array(String), method : String) : Match(T)?
+  def find_match(path_parts : Slice(String), method : String) : Match(T)?
     find_match(path_parts, 0, method)
   end
 
@@ -89,40 +94,45 @@ class LuckyRouter::Fragment(T)
     payload ? Match(T).new(payload, Hash(String, String).new) : nil
   end
 
-  protected def find_match(path_parts : Array(String), index : Int32, method : String) : Match(T)?
-    return match_for_method(method) if index >= path_parts.size
+  protected def find_match(path_parts : Slice(String), method : String) : Match(T)?
+    return match_for_method(method) if path_parts.empty?
 
-    path_part = path_parts[index]
+    path_part = path_parts[0]
+    path_parts = path_parts[1..]
 
-    index += 1
-
-    find_match_with_static_parts(path_part, path_parts, index, method) ||
-      find_match_with_dynamics(path_part, path_parts, index, method) ||
-      find_match_with_glob(path_part, path_parts, index, method)
+    find_match_with_static_parts(path_part, path_parts, method) ||
+      find_match_with_dynamics(path_part, path_parts, method) ||
+      find_match_with_glob(path_part, path_parts, method)
   end
 
-  private def find_match_with_static_parts(path_part, path_parts, index, method)
+  private def find_match_with_static_parts(path_part, path_parts, method)
     static_part = static_parts[path_part]?
     return unless static_part
 
-    static_part.find_match(path_parts, index, method)
+    static_part.find_match(path_parts, method)
   end
 
-  private def find_match_with_dynamics(path_part, path_parts, index, method)
+  private def find_match_with_dynamics(path_part, path_parts, method)
     dynamic_parts.each do |dynamic_part|
-      if match = dynamic_part.find_match(path_parts, index, method)
+      if match = dynamic_part.find_match(path_parts, method)
         match.params[dynamic_part.path_part.name] = path_part
         return match
       end
     end
   end
 
-  private def find_match_with_glob(path_part, path_parts, index, method)
+  private def find_match_with_glob(path_part, path_parts, method)
     glob = glob_part
     return unless glob
 
     if match = glob.match_for_method(method)
-      match.params[glob.path_part.name] = path_parts[index..].unshift(path_part).join("/")
+      match.params[glob.path_part.name] = String.build do |io|
+        io << path_part
+        path_parts.each do |path_part|
+          io << '/'
+          io << path_part
+        end
+      end
       match
     end
   end

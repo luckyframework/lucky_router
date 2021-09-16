@@ -65,8 +65,38 @@ class LuckyRouter::Matcher(T)
   end
 
   def match(method : String, path_to_match : String) : Match(T)?
-    parts = LuckerRouter::PathReader.new(path_to_match).to_a
-    match = root.find(parts, method)
+    # To avoid allocating an array for the segment parts, we use a static
+    # array with up to 16 segments.
+    parts_static_array = uninitialized StaticArray(String, 16)
+
+    # In the general case we still have to support more than 16 segments.
+    # We'll fallback to using an Array for that case.
+    parts_array = nil
+
+    index = 0
+    LuckerRouter::PathReader.new(path_to_match).each do |part|
+      if index == parts_static_array.size
+        # We don't have any more space in the static array:
+        # more contents to the array.
+        parts_array = Array(String).new(32)
+        parts_array.concat(parts_static_array)
+        parts_array << part
+      elsif parts_array
+        # We are using the fallback array, so push parts there.
+        parts_array << part
+      else
+        # We are still using the static array
+        parts_static_array[index] = part
+      end
+      index += 1
+    end
+
+    match =
+      if parts_array
+        root.find(parts_array, method)
+      else
+        root.find(parts_static_array.to_slice[0...index], method)
+      end
 
     if match.is_a?(Match)
       match
