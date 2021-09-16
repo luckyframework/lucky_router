@@ -132,9 +132,9 @@ class LuckyRouter::Fragment(T)
     if match = glob.match_for_method(method)
       match.params[glob.path_part.name] = String.build do |io|
         io << path_part
-        index.upto(path_parts.size - 1) do |index|
+        index.upto(path_parts.size - 1) do |sub_index|
           io << '/'
-          io << path_parts[index]
+          io << path_parts[sub_index]
         end
       end
       match
