@@ -35,20 +35,25 @@ struct LuckerRouter::PathReader
   end
 
   private def each_segment
-    decode = false
+    index = 0
     offset = 0
+    decode = false
+    slice = @path.to_slice
 
-    reader = Char::Reader.new(@path)
-    reader.each do |char|
-      case char
+    while index < slice.size
+      byte = slice[index]
+      case byte
       when '/'
-        length = reader.pos - offset
+        length = index - offset
         yield offset, length, decode
         decode = false
-        offset = reader.pos + 1
+        index += 1
+        offset = index
       when '%'
         decode = true
-        reader.pos += 2
+        index += 3
+      else
+        index += 1
       end
     end
 
