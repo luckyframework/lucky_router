@@ -56,6 +56,11 @@ class LuckyRouter::Fragment(T)
     find_match(parts, method) || NoMatch.new
   end
 
+  # :ditto:
+  def find(parts : Slice(String), method : String) : Match(T) | NoMatch
+    find_match(parts, method) || NoMatch.new
+  end
+
   def process_parts(parts : Array(PathPart), method : String, payload : T)
     leaf_fragment = parts.reduce(self) { |fragment, part| fragment.add_part(part) }
     leaf_fragment.method_to_payload[method] = payload
@@ -84,16 +89,19 @@ class LuckyRouter::Fragment(T)
     find_match(path_parts, 0, method)
   end
 
+  def find_match(path_parts : Slice(String), method : String) : Match(T)?
+    find_match(path_parts, 0, method)
+  end
+
   def match_for_method(method)
     payload = method_to_payload[method]?
     payload ? Match(T).new(payload, Hash(String, String).new) : nil
   end
 
-  protected def find_match(path_parts : Array(String), index : Int32, method : String) : Match(T)?
+  protected def find_match(path_parts, index, method : String) : Match(T)?
     return match_for_method(method) if index >= path_parts.size
 
     path_part = path_parts[index]
-
     index += 1
 
     find_match_with_static_parts(path_part, path_parts, index, method) ||
@@ -122,7 +130,13 @@ class LuckyRouter::Fragment(T)
     return unless glob
 
     if match = glob.match_for_method(method)
-      match.params[glob.path_part.name] = path_parts[index..].unshift(path_part).join("/")
+      match.params[glob.path_part.name] = String.build do |io|
+        io << path_part
+        index.upto(path_parts.size - 1) do |sub_index|
+          io << '/'
+          io << path_parts[sub_index]
+        end
+      end
       match
     end
   end

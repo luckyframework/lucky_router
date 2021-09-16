@@ -194,6 +194,15 @@ describe LuckyRouter do
     })
   end
 
+  it "matches a route with more than 16 segments" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("get", "/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/:z", :match)
+
+    match = router.match!("get", "/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z")
+    match.payload.should eq(:match)
+    match.params["z"].should eq("z")
+  end
+
   describe "route with trailing slash" do
     context "is defined with a trailing slash" do
       it "should treat it as a index route when called without a trailing slash" do
