@@ -1,2 +1,2 @@
-class LuckyRouter::NoMatch
+struct LuckyRouter::NoMatch
 end

@@ -20,6 +20,7 @@ elapsed_times = [] of Time::Span
       router.match!("put", "/users/1")
       router.match!("get", "/users/1/edit")
       router.match!("get", "/users/1/new")
+      router.match("get", "/no/match/found")
     end
   end
   elapsed_times << elapsed
