@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="generator" content="Crystal Docs 1.3.2">
+<meta name="generator" content="Crystal Docs 1.6.2">
 <meta name="crystal_docs.project_version" content="main">
 <meta name="crystal_docs.project_name" content="lucky_router">
 
@@ -174,7 +174,7 @@ fragment.dynamic_part <span class="c"># nil</span>
 fragment.static_parts
 
 <span class="c"># Would return:</span>
-{<span class="s">&quot;users&quot;</span> =&gt; <span class="t">Fragment</span>, <span class="s">&quot;posts&quot;</span> =&gt; <span class="t">Fragment</span>}
+{<span class="s">&quot;users&quot;</span> <span class="o">=&gt;</span> <span class="t">Fragment</span>, <span class="s">&quot;posts&quot;</span> <span class="o">=&gt;</span> <span class="t">Fragment</span>}
 
 <span class="c"># The Fragment in the &#39;users&#39; key would have:</span>
 
@@ -183,7 +183,7 @@ fragment.dynamic_part
 
 <span class="c"># Static parts</span>
 fragment.static_parts
-{<span class="s">&quot;foo&quot;</span> =&gt; <span class="t">Fragment</span>}</code></pre>
+{<span class="s">&quot;foo&quot;</span> <span class="o">=&gt;</span> <span class="t">Fragment</span>}</code></pre>
 <h2><a id="gotcha" class="anchor" href="#gotcha">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
@@ -215,7 +215,7 @@ dynamic parts</p>
   </h2>
   
     
-      <a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L40" target="_blank">
+      <a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L40" target="_blank">
         lucky_router/fragment.cr
       </a>
     
@@ -237,7 +237,7 @@ dynamic parts</p>
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#new%28path_part%29-class-method" class="signature"><strong>.new</strong>(path_part)</a>
+        <a href="#new%28path_part%3ALuckyRouter%3A%3APathPart%29-class-method" class="signature"><strong>.new</strong>(path_part : LuckyRouter::PathPart)</a>
         
       </li>
     
@@ -287,22 +287,22 @@ dynamic parts</p>
       </li>
     
       <li class="entry-summary">
-        <a href="#find_match%28path_parts%3AArray%28String%29%2Cmethod%3AString%29%3AMatch%28T%29%3F-instance-method" class="signature"><strong>#find_match</strong>(path_parts : Array(String), method : String) : Match(T)?</a>
+        <a href="#find_match%28path_parts%3AArray%28String%29%2Cmethod%3AString%29%3AMatch%28T%29%7CNil-instance-method" class="signature"><strong>#find_match</strong>(path_parts : Array(String), method : String) : Match(T) | Nil</a>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#find_match%28path_parts%3ASlice%28String%29%2Cmethod%3AString%29%3AMatch%28T%29%3F-instance-method" class="signature"><strong>#find_match</strong>(path_parts : Slice(String), method : String) : Match(T)?</a>
+        <a href="#find_match%28path_parts%3ASlice%28String%29%2Cmethod%3AString%29%3AMatch%28T%29%7CNil-instance-method" class="signature"><strong>#find_match</strong>(path_parts : Slice(String), method : String) : Match(T) | Nil</a>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#glob_part%3AFragment%28T%29%3F-instance-method" class="signature"><strong>#glob_part</strong> : Fragment(T)?</a>
+        <a href="#glob_part%3AFragment%28T%29%7CNil-instance-method" class="signature"><strong>#glob_part</strong> : Fragment(T) | Nil</a>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#glob_part%3D%28glob_part%3AFragment%28T%29%3F%29-instance-method" class="signature"><strong>#glob_part=</strong>(glob_part : Fragment(T)?)</a>
+        <a href="#glob_part%3D%28glob_part%3AFragment%28T%29%7CNil%29-instance-method" class="signature"><strong>#glob_part=</strong>(glob_part : Fragment(T) | Nil)</a>
         
       </li>
     
@@ -373,18 +373,18 @@ dynamic parts</p>
     Constructor Detail
   </h2>
   
-    <div class="entry-detail" id="new(path_part)-class-method">
+    <div class="entry-detail" id="new(path_part:LuckyRouter::PathPart)-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>(path_part)
+        def self.<strong>new</strong>(path_part : <a href="../LuckyRouter/PathPart.html">LuckyRouter::PathPart</a>)
 
-        <a class="method-permalink" href="#new%28path_part%29-class-method">#</a>
+        <a class="method-permalink" href="#new%28path_part%3ALuckyRouter%3A%3APathPart%29-class-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L50" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L50" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -414,7 +414,7 @@ dynamic parts</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L69" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L69" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -430,7 +430,7 @@ dynamic parts</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L84" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L84" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -446,7 +446,7 @@ dynamic parts</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L41" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L41" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -468,7 +468,7 @@ and returns NoMatch if one is not found</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L55" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L55" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -490,71 +490,71 @@ and returns NoMatch if one is not found</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L60" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L60" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="find_match(path_parts:Array(String),method:String):Match(T)?-instance-method">
+    <div class="entry-detail" id="find_match(path_parts:Array(String),method:String):Match(T)|Nil-instance-method">
       <div class="signature">
         
-        def <strong>find_match</strong>(path_parts : Array(String), method : String) : <a href="../LuckyRouter/Match.html">Match</a>(T)?
+        def <strong>find_match</strong>(path_parts : Array(String), method : String) : <a href="../LuckyRouter/Match.html">Match</a>(T) | Nil
 
-        <a class="method-permalink" href="#find_match%28path_parts%3AArray%28String%29%2Cmethod%3AString%29%3AMatch%28T%29%3F-instance-method">#</a>
+        <a class="method-permalink" href="#find_match%28path_parts%3AArray%28String%29%2Cmethod%3AString%29%3AMatch%28T%29%7CNil-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L88" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L88" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="find_match(path_parts:Slice(String),method:String):Match(T)?-instance-method">
+    <div class="entry-detail" id="find_match(path_parts:Slice(String),method:String):Match(T)|Nil-instance-method">
       <div class="signature">
         
-        def <strong>find_match</strong>(path_parts : Slice(String), method : String) : <a href="../LuckyRouter/Match.html">Match</a>(T)?
+        def <strong>find_match</strong>(path_parts : Slice(String), method : String) : <a href="../LuckyRouter/Match.html">Match</a>(T) | Nil
 
-        <a class="method-permalink" href="#find_match%28path_parts%3ASlice%28String%29%2Cmethod%3AString%29%3AMatch%28T%29%3F-instance-method">#</a>
+        <a class="method-permalink" href="#find_match%28path_parts%3ASlice%28String%29%2Cmethod%3AString%29%3AMatch%28T%29%7CNil-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L92" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L92" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="glob_part:Fragment(T)?-instance-method">
+    <div class="entry-detail" id="glob_part:Fragment(T)|Nil-instance-method">
       <div class="signature">
         
-        def <strong>glob_part</strong> : <a href="../LuckyRouter/Fragment.html">Fragment</a>(T)?
+        def <strong>glob_part</strong> : <a href="../LuckyRouter/Fragment.html">Fragment</a>(T) | Nil
 
-        <a class="method-permalink" href="#glob_part%3AFragment%28T%29%3F-instance-method">#</a>
+        <a class="method-permalink" href="#glob_part%3AFragment%28T%29%7CNil-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L43" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L43" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="glob_part=(glob_part:Fragment(T)?)-instance-method">
+    <div class="entry-detail" id="glob_part=(glob_part:Fragment(T)|Nil)-instance-method">
       <div class="signature">
         
-        def <strong>glob_part=</strong>(glob_part : <a href="../LuckyRouter/Fragment.html">Fragment</a>(T)?)
+        def <strong>glob_part=</strong>(glob_part : <a href="../LuckyRouter/Fragment.html">Fragment</a>(T) | Nil)
 
-        <a class="method-permalink" href="#glob_part%3D%28glob_part%3AFragment%28T%29%3F%29-instance-method">#</a>
+        <a class="method-permalink" href="#glob_part%3D%28glob_part%3AFragment%28T%29%7CNil%29-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L43" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L43" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -570,7 +570,7 @@ and returns NoMatch if one is not found</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L96" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L96" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -593,7 +593,7 @@ the final step to finding the payload is to search for a matching request method
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L47" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L47" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -609,7 +609,7 @@ the final step to finding the payload is to search for a matching request method
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L48" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L48" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -625,7 +625,7 @@ the final step to finding the payload is to search for a matching request method
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L64" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L64" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -641,7 +641,7 @@ the final step to finding the payload is to search for a matching request method
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/fragment.cr#L42" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/fragment.cr#L42" target="_blank">View source</a>]
         
       </div>
     </div>

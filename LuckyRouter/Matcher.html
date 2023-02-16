@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="generator" content="Crystal Docs 1.3.2">
+<meta name="generator" content="Crystal Docs 1.6.2">
 <meta name="crystal_docs.project_version" content="main">
 <meta name="crystal_docs.project_name" content="lucky_router">
 
@@ -163,7 +163,7 @@ if the route matches.</p>
   </svg>
 </a>Example</h2>
 <pre><code class="language-crystal"><span class="c"># &#39;T&#39; will be &#39;Symbol&#39;</span>
-router <span class="o">=</span> <span class="t">LuckyRouter</span><span class="t">::</span><span class="t">Matcher</span>(<span class="t">Symbol</span>).<span class="k">new</span>
+router <span class="o">=</span> <span class="t">LuckyRouter</span><span class="t">::</span><span class="t">Matcher</span>(<span class="t">Symbol</span>).new
 
 <span class="c"># Tell the router what payload to return if matched</span>
 router.add(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/users&quot;</span>, <span class="n">:index</span>)
@@ -194,7 +194,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
   </h2>
   
     
-      <a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/matcher.cr#L18" target="_blank">
+      <a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/matcher.cr#L18" target="_blank">
         lucky_router/matcher.cr
       </a>
     
@@ -225,7 +225,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       </li>
     
       <li class="entry-summary">
-        <a href="#match%28method%3AString%2Cpath_to_match%3AString%29%3AMatch%28T%29%3F-instance-method" class="signature"><strong>#match</strong>(method : String, path_to_match : String) : Match(T)?</a>
+        <a href="#match%28method%3AString%2Cpath_to_match%3AString%29%3AMatch%28T%29%7CNil-instance-method" class="signature"><strong>#match</strong>(method : String, path_to_match : String) : Match(T) | Nil</a>
         
       </li>
     
@@ -301,23 +301,23 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/matcher.cr#L23" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/matcher.cr#L23" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="match(method:String,path_to_match:String):Match(T)?-instance-method">
+    <div class="entry-detail" id="match(method:String,path_to_match:String):Match(T)|Nil-instance-method">
       <div class="signature">
         
-        def <strong>match</strong>(method : String, path_to_match : String) : <a href="../LuckyRouter/Match.html">Match</a>(T)?
+        def <strong>match</strong>(method : String, path_to_match : String) : <a href="../LuckyRouter/Match.html">Match</a>(T) | Nil
 
-        <a class="method-permalink" href="#match%28method%3AString%2Cpath_to_match%3AString%29%3AMatch%28T%29%3F-instance-method">#</a>
+        <a class="method-permalink" href="#match%28method%3AString%2Cpath_to_match%3AString%29%3AMatch%28T%29%7CNil-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/matcher.cr#L67" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/matcher.cr#L67" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -333,7 +333,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/matcher.cr#L106" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/matcher.cr#L106" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -349,7 +349,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/matcher.cr#L21" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/matcher.cr#L21" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -370,7 +370,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/62801c52e45f1bc3b6d0c937036faf6593ba50c4/src/lucky_router/matcher.cr#L20" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/ce3c17a8997ff4d915d850ef1dc1ad13d7ae2c7f/src/lucky_router/matcher.cr#L20" target="_blank">View source</a>]
         
       </div>
     </div>

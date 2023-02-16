@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="generator" content="Crystal Docs 1.3.2">
+<meta name="generator" content="Crystal Docs 1.6.2">
 <meta name="crystal_docs.project_version" content="main">
 <meta name="crystal_docs.project_name" content="lucky_router">
 
@@ -155,7 +155,7 @@
 </a>Usage</h2>
 <pre><code class="language-crystal"><span class="k">require</span> <span class="s">&quot;lucky_router&quot;</span>
 
-router <span class="o">=</span> <span class="t">LuckyRouter</span><span class="t">::</span><span class="t">Matcher</span>(<span class="t">Symbol</span>).<span class="k">new</span>
+router <span class="o">=</span> <span class="t">LuckyRouter</span><span class="t">::</span><span class="t">Matcher</span>(<span class="t">Symbol</span>).new
 
 router.add(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/users&quot;</span>, <span class="n">:index</span>)
 router.add(<span class="s">&quot;delete&quot;</span>, <span class="s">&quot;/users/:id&quot;</span>, <span class="n">:delete</span>)
