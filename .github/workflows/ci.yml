@@ -32,12 +32,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest]
         crystal_version:
-          - 1.4.0
+          - 1.6.2
           - latest
         experimental:
           - false
-    runs-on: ubuntu-latest
+        include:
+          - os: windows-latest
+            crystal_version: latest
+            experimental: true
+    runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.experimental }}
     steps:
       - uses: actions/checkout@v2

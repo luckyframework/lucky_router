@@ -81,7 +81,7 @@ class LuckyRouter::Fragment(T)
     end
   end
 
-  def dynamic?
+  def dynamic? : Bool
     path_part.path_variable?
   end
 
