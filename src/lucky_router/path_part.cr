@@ -37,20 +37,20 @@ struct LuckyRouter::PathPart
   def initialize(@part)
   end
 
-  def name
+  def name : String
     name = part.lchop('?').lchop('*').lchop(':')
     unnamed_glob?(name) ? "glob" : name
   end
 
-  def optional?
+  def optional? : Bool
     part.starts_with?('?')
   end
 
-  def path_variable?
+  def path_variable? : Bool
     part.starts_with?(':') || part.starts_with?("?:") || glob?
   end
 
-  def glob?
+  def glob? : Bool
     part.starts_with?('*')
   end
 

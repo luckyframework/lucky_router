@@ -23,7 +23,7 @@ struct LuckerRouter::PathReader
   def initialize(@path : String)
   end
 
-  def each
+  def each(&)
     each_segment do |offset, length, decode|
       segment = String.new(@path.to_unsafe + offset, length)
       if decode
@@ -34,7 +34,7 @@ struct LuckerRouter::PathReader
     end
   end
 
-  private def each_segment
+  private def each_segment(&)
     index = 0
     offset = 0
     decode = false
