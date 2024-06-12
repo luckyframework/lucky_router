@@ -50,6 +50,29 @@ class LuckyRouter::Fragment(T)
   def initialize(@path_part)
   end
 
+  def collect_routes : Array(Tuple(Array(PathPart), String, T))
+    routes = [] of Tuple(Array(PathPart), String, T)
+    method_to_payload.each do |method, payload|
+      routes << {[path_part], method, payload}
+    end
+
+    routes += dynamic_parts.flat_map(&.collect_routes).map do |item|
+      item[0].unshift(path_part)
+      item
+    end
+    routes += static_parts.values.flat_map(&.collect_routes).map do |item|
+      item[0].unshift(path_part)
+      item
+    end
+    if gp = glob_part
+      routes += gp.collect_routes.map do |item|
+        item[0].unshift(path_part)
+        item
+      end
+    end
+    routes
+  end
+
   # This looks for a matching fragment for the given parts
   # and returns NoMatch if one is not found
   def find(parts : Array(String), method : String) : Match(T) | NoMatch

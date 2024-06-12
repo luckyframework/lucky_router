@@ -21,6 +21,22 @@ describe LuckyRouter::Fragment do
     id_fragment.static_parts["edit"].should_not be_nil
     id_fragment.static_parts["new"].should_not be_nil
   end
+
+  describe "#collect_routes" do
+    it "returns list of routes from fragment" do
+      fragment = build_fragment
+      fragment.process_parts(build_path_parts("users", ":id"), "get", :show)
+
+      result = fragment.collect_routes
+
+      result.size.should eq(1)
+      result[0].should eq({
+        [LuckyRouter::PathPart.new(""), LuckyRouter::PathPart.new("users"), LuckyRouter::PathPart.new(":id")],
+        "get",
+        :show,
+      })
+    end
+  end
 end
 
 private def build_path_parts(*path_parts) : Array(LuckyRouter::PathPart)
