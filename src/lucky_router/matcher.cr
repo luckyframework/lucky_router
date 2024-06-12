@@ -42,6 +42,14 @@ class LuckyRouter::Matcher(T)
     end
   end
 
+  # Array of the path, method, and payload
+  def list_routes : Array(Tuple(String, String, T))
+    root.collect_routes.map do |(path_parts, method, payload)|
+      path = "/" + path_parts.reject(&.part.presence.nil?).map(&.part).join("/")
+      Tuple.new(path, method, payload)
+    end
+  end
+
   private def process_and_add_path(method : String, parts : Array(PathPart), payload : T, path : String)
     if method.downcase == "get"
       root.process_parts(parts, "head", payload)
