@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="generator" content="Crystal Docs 1.6.2">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Crystal Docs 1.13.3">
 <meta name="crystal_docs.project_version" content="main">
 <meta name="crystal_docs.project_name" content="lucky_router">
 
@@ -22,9 +23,14 @@
 
 <svg class="hidden">
   <symbol id="octicon-link" viewBox="0 0 16 16">
-    <path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
+    <path fill="currentColor" fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
   </symbol>
 </svg>
+<input type="checkbox" id="sidebar-btn">
+<label for="sidebar-btn" id="sidebar-btn-label">
+  <svg class="open" xmlns="http://www.w3.org/2000/svg" height="2em" width="2em" viewBox="0 0 512 512"><title>Open Sidebar</title><path fill="currentColor" d="M80 96v64h352V96H80zm0 112v64h352v-64H80zm0 112v64h352v-64H80z"></path></svg>
+  <svg class="close" xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 512 512"><title>Close Sidebar</title><path fill="currentColor" d="m118.6 73.4-45.2 45.2L210.7 256 73.4 393.4l45.2 45.2L256 301.3l137.4 137.3 45.2-45.2L301.3 256l137.3-137.4-45.2-45.2L256 210.7Z"></path></svg>
+</label>
 <div class="sidebar">
   <div class="sidebar-header">
     <div class="search-box">
@@ -135,7 +141,7 @@
 <div class="main-content">
 <h1 class="type-name">
 
-  <span class="kind">class</span> LuckyRouter::Matcher(T)
+  <span class="kind">class</span> LuckyRouter::<wbr>Matcher(T)
 
 </h1>
 
@@ -194,12 +200,14 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
   </h2>
   
     
-      <a href="https://github.com/luckyframework/lucky_router/blob/d4e8fc7a2f611bad00bbcd4055962a15c7005a9a/src/lucky_router/matcher.cr#L18" target="_blank">
+      <a href="https://github.com/luckyframework/lucky_router/blob/9063aaf631315ca980dcddca24a283be2aae7b51/src/lucky_router/matcher.cr#L18" target="_blank">
         lucky_router/matcher.cr
       </a>
     
     <br/>
   
+
+
 
 
 
@@ -221,6 +229,13 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
     
       <li class="entry-summary">
         <a href="#add%28method%3AString%2Cpath%3AString%2Cpayload%3AT%29-instance-method" class="signature"><strong>#add</strong>(method : String, path : String, payload : T)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#list_routes%3AArray%28Tuple%28String%2CString%2CT%29%29-instance-method" class="signature"><strong>#list_routes</strong> : Array(Tuple(String, String, T))</a>
+        
+          <div class="summary"><p>Array of the path, method, and payload</p></div>
         
       </li>
     
@@ -250,8 +265,6 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
 
 
 
-
-
 <div class="methods-inherited">
   
     
@@ -263,7 +276,13 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
     
 
 
+    
+
+
   
+    
+
+
     
 
 
@@ -275,6 +294,8 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
 
   
 </div>
+
+
 
 
 
@@ -301,7 +322,28 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/d4e8fc7a2f611bad00bbcd4055962a15c7005a9a/src/lucky_router/matcher.cr#L23" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/9063aaf631315ca980dcddca24a283be2aae7b51/src/lucky_router/matcher.cr#L23" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="list_routes:Array(Tuple(String,String,T))-instance-method">
+      <div class="signature">
+        
+        def <strong>list_routes</strong> : Array(Tuple(String, String, T))
+
+        <a class="method-permalink" href="#list_routes%3AArray%28Tuple%28String%2CString%2CT%29%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Array of the path, method, and payload</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/luckyframework/lucky_router/blob/9063aaf631315ca980dcddca24a283be2aae7b51/src/lucky_router/matcher.cr#L46" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -317,7 +359,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/d4e8fc7a2f611bad00bbcd4055962a15c7005a9a/src/lucky_router/matcher.cr#L67" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/9063aaf631315ca980dcddca24a283be2aae7b51/src/lucky_router/matcher.cr#L75" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -333,7 +375,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/d4e8fc7a2f611bad00bbcd4055962a15c7005a9a/src/lucky_router/matcher.cr#L106" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/9063aaf631315ca980dcddca24a283be2aae7b51/src/lucky_router/matcher.cr#L114" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -349,7 +391,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/d4e8fc7a2f611bad00bbcd4055962a15c7005a9a/src/lucky_router/matcher.cr#L21" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/9063aaf631315ca980dcddca24a283be2aae7b51/src/lucky_router/matcher.cr#L21" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -370,13 +412,11 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/d4e8fc7a2f611bad00bbcd4055962a15c7005a9a/src/lucky_router/matcher.cr#L20" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/9063aaf631315ca980dcddca24a283be2aae7b51/src/lucky_router/matcher.cr#L20" target="_blank">View source</a>]
         
       </div>
     </div>
   
-
-
 
 
 </div>
