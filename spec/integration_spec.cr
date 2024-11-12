@@ -194,6 +194,19 @@ describe LuckyRouter do
     })
   end
 
+  it "matches both get and head with route globbing" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("get", "/posts/something/*", :post_index)
+
+    router.match!("get", "/posts/something/1").params.should eq({
+      "glob" => "1",
+    })
+
+    router.match!("head", "/posts/something/1").params.should eq({
+      "glob" => "1",
+    })
+  end
+
   it "matches a route with more than 16 segments" do
     router = LuckyRouter::Matcher(Symbol).new
     router.add("get", "/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/:z", :match)
