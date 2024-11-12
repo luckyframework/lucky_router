@@ -90,10 +90,8 @@ class LuckyRouter::Fragment(T)
   end
 
   def add_part(path_part : PathPart) : Fragment(T)
-    if glob_part = self.glob_part
-      return glob_part
-    elsif path_part.glob?
-      self.glob_part = Fragment(T).new(path_part: path_part)
+    if path_part.glob?
+      self.glob_part ||= Fragment(T).new(path_part: path_part)
     elsif path_part.path_variable?
       existing = self.dynamic_parts.find { |fragment| fragment.path_part == path_part }
       return existing if existing
