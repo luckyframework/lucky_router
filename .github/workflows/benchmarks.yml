@@ -1,0 +1,135 @@
+name: Benchmarks
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  benchmarks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: crystal-lang/install-crystal@v1
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup benchmark file paths and commit SHAs
+        run: |
+          echo "BASE_SHA=$(echo ${{ github.event.pull_request.base.sha }} | cut -c1-8)" >> $GITHUB_ENV
+          echo "HEAD_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-8)" >> $GITHUB_ENV
+
+          echo "BASELINE_FILE=baseline.txt" >> $GITHUB_ENV
+          echo "CONTENDER_FILE=contender.txt" >> $GITHUB_ENV
+          echo "PR_COMMENT=pr_comment.md" >> $GITHUB_ENV
+
+      - name: Fetch base and head commits
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.sha }}
+          git fetch origin ${{ github.event.pull_request.head.sha }}
+
+      - name: Run benchmarks
+        run: |
+          RUN_BENCHMARK="./bin/benchmark"
+
+          git checkout ${{ github.event.pull_request.base.sha }}
+          rm -rf ./bin ./lib
+          shards build benchmark --production --release
+          $RUN_BENCHMARK > "$BASELINE_FILE"
+
+          git checkout ${{ github.event.pull_request.head.sha }}
+          rm -rf ./bin ./lib
+          shards build benchmark --production --release
+          $RUN_BENCHMARK > "$CONTENDER_FILE"
+
+      - name: Compare results
+        run: |
+          # Comparison script
+          cat << 'EOF' > compare.sh
+          #!/usr/bin/env bash
+          
+          BASE_FILE="$1"
+          CONTENDER_FILE="$2"
+          OUTPUT_FILE="$3"
+          THRESHOLD=2
+          
+          REGRESSION_FLAG_FILE=$(mktemp)
+          
+          echo "### ⚠️ Performance Report" > "$OUTPUT_FILE"
+          echo "" >> "$OUTPUT_FILE"
+          printf "| Benchmark | Current (ns/op) | Previous (ns/op) | Ratio |\n" >> "$OUTPUT_FILE"
+          printf "|-----------|-----------------|------------------|-------|\n" >> "$OUTPUT_FILE"
+          
+          paste "$BASE_FILE" "$CONTENDER_FILE" | while IFS=$'\t' read -r base_line contender_line; do
+            bench_name=$(echo "$base_line" | awk '{print $1}' | sed 's/\x1b\[[0-9;]*m//g')
+          
+            parse_time_ns() {
+              local input="$1"
+              local time unit
+          
+              cleaned=$(echo "$input" | tr -d ',')
+          
+              time=$(echo "$cleaned" | grep -oP '\(\s*\K[0-9.]+(?=[a-zµ]+)')
+              unit=$(echo "$cleaned" | grep -oP '\(\s*[0-9.]+\K[a-zµ]+')
+          
+              [[ -z "$unit" ]] && unit="ns"
+          
+              case "$unit" in
+                ns) echo "$time" ;;
+                µs) awk "BEGIN {printf \"%.6f\", $time * 1000}" ;;
+                ms) awk "BEGIN {printf \"%.6f\", $time * 1000000}" ;;
+                s)  awk "BEGIN {printf \"%.6f\", $time * 1000000000}" ;;
+                *)  echo "" ;;
+              esac
+            }
+          
+            base_ns=$(parse_time_ns "$base_line")
+            contender_ns=$(parse_time_ns "$contender_line")
+          
+            if [[ -z "$base_ns" || -z "$contender_ns" ]]; then
+              printf "| %s | %s | %s | %s |\n" "$bench_name" "${contender_ns:-N/A}" "${base_ns:-N/A}" "N/A" >> "$OUTPUT_FILE"
+              continue
+            fi
+          
+            ratio=$(awk "BEGIN {printf \"%.3f\", $contender_ns / $base_ns}")
+            printf "| %s | %.2f | %.2f | %.3f |\n" "$bench_name" "$contender_ns" "$base_ns" "$ratio" >> "$OUTPUT_FILE"
+          
+            if (( $(echo "$ratio > $THRESHOLD" | bc -l) )); then
+              echo "regression" > "$REGRESSION_FLAG_FILE"
+            fi
+          done
+          
+          echo "" >> "$OUTPUT_FILE"
+          if [[ -f "$REGRESSION_FLAG_FILE" ]]; then
+            echo "⚠️ **Performance regression detected.** One or more benchmarks exceeded the slowdown threshold of ${THRESHOLD}×." >> "$OUTPUT_FILE"
+          else
+            echo "✅ **No significant performance regressions detected.**" >> "$OUTPUT_FILE"
+          fi
+          
+          rm -f "$REGRESSION_FLAG_FILE"
+          EOF
+
+          chmod +x compare.sh
+          ./compare.sh "$BASELINE_FILE" "$CONTENDER_FILE" "$PR_COMMENT"
+
+          {
+            echo "Benchmark comparison for [\`${BASE_SHA}\`](https://github.com/${{ github.repository }}/commit/${{ github.event.pull_request.base.sha }}) (base) vs [\`${HEAD_SHA}\`](https://github.com/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha }}) (PR)"
+            echo ""
+            cat "$PR_COMMENT"
+          } > temp_comment.md
+
+          mv temp_comment.md "$PR_COMMENT"
+
+      - name: Comment PR
+        uses: actions/github-script@v4.0.2
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const comment = fs.readFileSync(process.env.PR_COMMENT, 'utf8');
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

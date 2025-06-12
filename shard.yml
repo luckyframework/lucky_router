@@ -1,6 +1,10 @@
 name: lucky_router
 version: 0.2.0
 
+targets:
+  benchmark:
+    main: src/benchmark.cr
+
 authors:
   - Paul Smith <paulcsmith0218@gmail.com>
 
