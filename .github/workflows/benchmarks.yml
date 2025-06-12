@@ -10,6 +10,8 @@ jobs:
 
     steps:
       - uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: latest
 
       - name: Checkout
         uses: actions/checkout@v4
