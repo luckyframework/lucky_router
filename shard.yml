@@ -1,5 +1,5 @@
 name: lucky_router
-version: 0.2.0
+version: 0.6.0
 
 targets:
   benchmark:
@@ -8,6 +8,10 @@ targets:
 authors:
   - Paul Smith <paulcsmith0218@gmail.com>
 
-crystal: 0.23.1
-
+crystal: ">= 1.10.0"
 license: MIT
+
+development_dependencies:
+  ameba:
+    github: crystal-ameba/ameba
+    version: ~> 1.5.0

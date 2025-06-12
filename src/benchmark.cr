@@ -3,12 +3,6 @@ require "./lucky_router"
 
 router = LuckyRouter::Matcher(Symbol).new
 
-1000.times do
-  router.add("put", "/users/:id", :update)
-  router.add("get", "/users/:id/edit", :edit)
-  router.add("get", "/users/:id/new", :new)
-end
-
 router.add("get", "/users", :index)
 router.add("post", "/users", :create)
 router.add("get", "/users/:id", :show)

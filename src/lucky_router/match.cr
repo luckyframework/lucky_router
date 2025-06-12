@@ -1,4 +1,4 @@
-class LuckyRouter::Match(T)
+struct LuckyRouter::Match(T)
   getter payload : T
   getter params : Hash(String, String)
 
