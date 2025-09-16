@@ -123,9 +123,8 @@ jobs:
           mv temp_comment.md "$PR_COMMENT"
 
       - name: Comment PR
-        uses: actions/github-script@v4.0.2
+        uses: actions/github-script@v8
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
           script: |
             const fs = require('fs');
             const comment = fs.readFileSync(process.env.PR_COMMENT, 'utf8');
