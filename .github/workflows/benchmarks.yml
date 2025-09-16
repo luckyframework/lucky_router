@@ -123,13 +123,12 @@ jobs:
           mv temp_comment.md "$PR_COMMENT"
 
       - name: Comment PR
-        uses: actions/github-script@v4.0.2
+        uses: actions/github-script@v8
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
           script: |
             const fs = require('fs');
             const comment = fs.readFileSync(process.env.PR_COMMENT, 'utf8');
-            github.issues.createComment({
+            github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
