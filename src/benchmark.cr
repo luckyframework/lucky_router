@@ -17,6 +17,7 @@ router.add("get", "/feed/?:year/?:month", :index)
 router.add("get", "/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z", :show)
 router.add("get", "/get/var/:b/:c/:d/:e/:f/:g/:h/:i/:j/:k/:l/:m/:n/:o/:p/:q/:r/:s/:t/:u/:v/:w/:x/:y/:z", :show)
 router.add("get", "/test/supercalifragilisticexpialidociousfoobarbazqux/1", :show)
+router.add("get", "/users/:id/avatar.:format", :show)
 
 Benchmark.ips do |x|
   x.report("LuckyRouter match!") do
@@ -34,5 +35,6 @@ Benchmark.ips do |x|
     router.match!("get", "/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z")
     router.match!("get", "/get/var/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z")
     router.match!("get", "/test/supercalifragilisticexpialidociousfoobarbazqux/1")
+    router.match!("get", "/users/1/avatar.png")
   end
 end
