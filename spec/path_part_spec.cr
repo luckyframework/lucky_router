@@ -127,6 +127,42 @@ describe LuckyRouter::PathPart do
     end
   end
 
+  describe "#path_variable_prefixed?" do
+    it "is true for segments with an embedded colon" do
+      path_part = LuckyRouter::PathPart.new("blog.:format")
+
+      path_part.path_variable_prefixed?.should be_truthy
+    end
+
+    it "is false for plain dynamic segments" do
+      path_part = LuckyRouter::PathPart.new(":id")
+
+      path_part.path_variable_prefixed?.should be_falsey
+    end
+
+    it "is false for static segments" do
+      path_part = LuckyRouter::PathPart.new("users")
+
+      path_part.path_variable_prefixed?.should be_falsey
+    end
+  end
+
+  describe "#prefix" do
+    it "returns the prefix before the colon" do
+      path_part = LuckyRouter::PathPart.new("blog.:format")
+
+      path_part.prefix.should eq "blog."
+    end
+  end
+
+  describe "#variable_name" do
+    it "returns the variable name after the colon" do
+      path_part = LuckyRouter::PathPart.new("blog.:format")
+
+      path_part.variable_name.should eq "format"
+    end
+  end
+
   describe "equality" do
     it "is equal to another path part if their part is the same" do
       part_a = LuckyRouter::PathPart.new("users")

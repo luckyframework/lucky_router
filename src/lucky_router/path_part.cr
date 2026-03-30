@@ -54,6 +54,23 @@ struct LuckyRouter::PathPart
     part.starts_with?('*')
   end
 
+  def path_variable_prefixed? : Bool
+    return false if path_variable? || glob?
+
+    bare = optional? ? part[1..] : part
+    (index = bare.index(':')) ? index > 0 : false
+  end
+
+  def prefix : String
+    bare = optional? ? part[1..] : part
+    bare[0...bare.index!(':')]
+  end
+
+  def variable_name : String
+    bare = optional? ? part[1..] : part
+    bare[(bare.index!(':').succ)..]
+  end
+
   def validate!
     raise InvalidGlobError.new(part) if invalid_glob?
   end

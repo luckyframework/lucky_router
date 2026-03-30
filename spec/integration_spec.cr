@@ -299,6 +299,89 @@ describe LuckyRouter do
     end
   end
 
+  describe "prefixed segments" do
+    it "matches a prefixed segment with a prefix" do
+      router = LuckyRouter::Matcher(Symbol).new
+      router.add("get", "/blog.:format", :blog)
+
+      match = router.match!("get", "/blog.json")
+      match.payload.should eq :blog
+      match.params.should eq({"format" => "json"})
+    end
+
+    it "matches prefixed segments in the middle of a path" do
+      router = LuckyRouter::Matcher(Symbol).new
+      router.add("get", "/users/:id/avatar.:format", :avatar)
+
+      match = router.match!("get", "/users/42/avatar.png")
+      match.payload.should eq :avatar
+      match.params.should eq({"id" => "42", "format" => "png"})
+    end
+
+    it "does not match when prefixed prefix is missing" do
+      router = LuckyRouter::Matcher(Symbol).new
+      router.add("get", "/blog.:format", :blog)
+
+      router.match("get", "/json").should be_nil
+    end
+
+    it "does not match when value after prefix is empty" do
+      router = LuckyRouter::Matcher(Symbol).new
+      router.add("get", "/blog.:format", :blog)
+
+      router.match("get", "/blog.").should be_nil
+    end
+
+    it "prefers static over prefixed" do
+      router = LuckyRouter::Matcher(Symbol).new
+      router.add("get", "/blog.:format", :prefixed)
+      router.add("get", "/blog.rss", :static)
+
+      router.match!("get", "/blog.rss").payload.should eq :static
+      router.match!("get", "/blog.json").payload.should eq :prefixed
+    end
+
+    it "handles multiple prefixed segments at different levels" do
+      router = LuckyRouter::Matcher(Symbol).new
+      router.add("get", "/file-:name/rev-:version", :file)
+
+      match = router.match!("get", "/file-readme/rev-2")
+      match.payload.should eq :file
+      match.params.should eq({"name" => "readme", "version" => "2"})
+    end
+
+    it "matches optional prefixed segments" do
+      router = LuckyRouter::Matcher(Symbol).new
+      router.add("get", "/posts/:id/?page-:num", :posts)
+
+      router.match!("get", "/posts/5").params.should eq({"id" => "5"})
+
+      match = router.match!("get", "/posts/5/page-3")
+      match.payload.should eq :posts
+      match.params.should eq({"id" => "5", "num" => "3"})
+    end
+
+    it "works with a glob after a prefixed segment" do
+      router = LuckyRouter::Matcher(Symbol).new
+      router.add("get", "/files/doc.:format/*:rest", :show)
+
+      router.match!("get", "/files/doc.pdf").params.should eq({"format" => "pdf"})
+      router.match!("get", "/files/doc.pdf/pages/1/2").params.should eq({
+        "format" => "pdf",
+        "rest"   => "pages/1/2",
+      })
+    end
+
+    it "raises on duplicate prefixed routes" do
+      router = LuckyRouter::Matcher(Symbol).new
+      router.add("get", "/blog.:format", :blog)
+
+      expect_raises LuckyRouter::DuplicateRouteError do
+        router.add("get", "/blog.:ext", :blog2)
+      end
+    end
+  end
+
   it "URI decodes path parts" do
     router = LuckyRouter::Matcher(Symbol).new
     router.add("get", "/users/:email/tasks", :show)

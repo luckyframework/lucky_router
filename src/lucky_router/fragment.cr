@@ -39,6 +39,7 @@
 # dynamic parts
 class LuckyRouter::Fragment(T)
   getter dynamic_parts = Array(Fragment(T)).new
+  property prefixed_dynamic_parts : Array(Fragment(T))? = nil
   getter static_parts = Hash(String, Fragment(T)).new
   property glob_part : Fragment(T)?
   # Every path can have multiple request methods
@@ -59,6 +60,12 @@ class LuckyRouter::Fragment(T)
     routes += dynamic_parts.flat_map(&.collect_routes).map do |item|
       item[0].unshift(path_part)
       item
+    end
+    if pdp = prefixed_dynamic_parts
+      routes += pdp.flat_map(&.collect_routes).map do |item|
+        item[0].unshift(path_part)
+        item
+      end
     end
     routes += static_parts.values.flat_map(&.collect_routes).map do |item|
       item[0].unshift(path_part)
@@ -99,6 +106,14 @@ class LuckyRouter::Fragment(T)
       fragment = Fragment(T).new(path_part: path_part)
       self.dynamic_parts << fragment
       fragment
+    elsif path_part.path_variable_prefixed?
+      parts = self.prefixed_dynamic_parts ||= Array(Fragment(T)).new
+      existing = parts.find { |fragment| fragment.path_part == path_part }
+      return existing if existing
+
+      fragment = Fragment(T).new(path_part: path_part)
+      parts << fragment
+      fragment
     else
       static_parts[path_part.part] ||= Fragment(T).new(path_part: path_part)
     end
@@ -128,6 +143,7 @@ class LuckyRouter::Fragment(T)
     index += 1
 
     find_match_with_static_parts(path_part, path_parts, index, method) ||
+      find_match_with_prefixed_dynamics(path_part, path_parts, index, method) ||
       find_match_with_dynamics(path_part, path_parts, index, method) ||
       find_match_with_glob(path_part, path_parts, index, method)
   end
@@ -137,6 +153,22 @@ class LuckyRouter::Fragment(T)
     return unless static_part
 
     static_part.find_match(path_parts, index, method)
+  end
+
+  private def find_match_with_prefixed_dynamics(path_part, path_parts, index, method)
+    return unless pdp = prefixed_dynamic_parts
+
+    pdp.each do |prefixed_part|
+      prefix = prefixed_part.path_part.prefix
+      next unless path_part.starts_with?(prefix)
+      value = path_part[prefix.size..]
+      next if value.empty?
+
+      if match = prefixed_part.find_match(path_parts, index, method)
+        match.params[prefixed_part.path_part.variable_name] = value
+        return match
+      end
+    end
   end
 
   private def find_match_with_dynamics(path_part, path_parts, index, method)
