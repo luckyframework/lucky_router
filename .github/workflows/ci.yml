@@ -2,7 +2,7 @@ name: Lucky Router CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
     branches: "*"
 
@@ -14,14 +14,18 @@ jobs:
     continue-on-error: false
     steps:
       - name: Download source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install Crystal
         uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: latest
       - name: Install shards
         run: shards install
       - name: Format
         run: crystal tool format --check
-      - name: Lint
+      - name: Build Ameba
+        run: crystal build -o bin/ameba lib/ameba/bin/ameba.cr
+      - name: Run Ameba
         run: ./bin/ameba
   specs:
     strategy:
@@ -31,11 +35,11 @@ jobs:
         crystal_version: [latest]
         include:
           - os: ubuntu-latest
-            crystal_version: 1.10.0
+            crystal_version: 1.16.0
     runs-on: ${{ matrix.os }}
     continue-on-error: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: crystal-lang/install-crystal@v1
         with:
           crystal: ${{ matrix.crystal_version }}
