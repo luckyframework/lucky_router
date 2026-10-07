@@ -23,7 +23,9 @@ jobs:
         run: shards install
       - name: Format
         run: crystal tool format --check
-      - name: Lint
+      - name: Build Ameba
+        run: crystal build -o bin/ameba lib/ameba/bin/ameba.cr
+      - name: Run Ameba
         run: ./bin/ameba
   specs:
     strategy:
