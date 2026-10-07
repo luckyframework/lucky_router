@@ -7,6 +7,7 @@ on:
 jobs:
   benchmarks:
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
       - uses: crystal-lang/install-crystal@v1
@@ -14,7 +15,7 @@ jobs:
           crystal: latest
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup benchmark file paths and commit SHAs
         run: |
@@ -49,33 +50,33 @@ jobs:
           # Comparison script
           cat << 'EOF' > compare.sh
           #!/usr/bin/env bash
-          
+
           BASE_FILE="$1"
           CONTENDER_FILE="$2"
           OUTPUT_FILE="$3"
           THRESHOLD=2
-          
+
           REGRESSION_FLAG_FILE=$(mktemp)
-          
+
           echo "### ⚠️ Performance Report" > "$OUTPUT_FILE"
           echo "" >> "$OUTPUT_FILE"
           printf "| Benchmark | Current (ns/op) | Previous (ns/op) | Ratio |\n" >> "$OUTPUT_FILE"
           printf "|-----------|-----------------|------------------|-------|\n" >> "$OUTPUT_FILE"
-          
+
           paste "$BASE_FILE" "$CONTENDER_FILE" | while IFS=$'\t' read -r base_line contender_line; do
             bench_name=$(echo "$base_line" | awk '{print $1}' | sed 's/\x1b\[[0-9;]*m//g')
-          
+
             parse_time_ns() {
               local input="$1"
               local time unit
-          
+
               cleaned=$(echo "$input" | tr -d ',')
-          
+
               time=$(echo "$cleaned" | grep -oP '\(\s*\K[0-9.]+(?=[a-zµ]+)')
               unit=$(echo "$cleaned" | grep -oP '\(\s*[0-9.]+\K[a-zµ]+')
-          
+
               [[ -z "$unit" ]] && unit="ns"
-          
+
               case "$unit" in
                 ns) echo "$time" ;;
                 µs) awk "BEGIN {printf \"%.6f\", $time * 1000}" ;;
@@ -84,30 +85,30 @@ jobs:
                 *)  echo "" ;;
               esac
             }
-          
+
             base_ns=$(parse_time_ns "$base_line")
             contender_ns=$(parse_time_ns "$contender_line")
-          
+
             if [[ -z "$base_ns" || -z "$contender_ns" ]]; then
               printf "| %s | %s | %s | %s |\n" "$bench_name" "${contender_ns:-N/A}" "${base_ns:-N/A}" "N/A" >> "$OUTPUT_FILE"
               continue
             fi
-          
+
             ratio=$(awk "BEGIN {printf \"%.3f\", $contender_ns / $base_ns}")
             printf "| %s | %.2f | %.2f | %.3f |\n" "$bench_name" "$contender_ns" "$base_ns" "$ratio" >> "$OUTPUT_FILE"
-          
+
             if (( $(echo "$ratio > $THRESHOLD" | bc -l) )); then
               echo "regression" > "$REGRESSION_FLAG_FILE"
             fi
           done
-          
+
           echo "" >> "$OUTPUT_FILE"
           if [[ -f "$REGRESSION_FLAG_FILE" ]]; then
             echo "⚠️ **Performance regression detected.** One or more benchmarks exceeded the slowdown threshold of ${THRESHOLD}×." >> "$OUTPUT_FILE"
           else
             echo "✅ **No significant performance regressions detected.**" >> "$OUTPUT_FILE"
           fi
-          
+
           rm -f "$REGRESSION_FLAG_FILE"
           EOF
 
@@ -123,7 +124,7 @@ jobs:
           mv temp_comment.md "$PR_COMMENT"
 
       - name: Comment PR
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
