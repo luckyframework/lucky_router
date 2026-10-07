@@ -23,22 +23,23 @@ class LuckyRouter::Matcher(T)
   def add(method : String, path : String, payload : T)
     all_path_parts = PathPart.split_path(path)
     validate!(path, all_path_parts)
-    optional_parts = all_path_parts.select(&.optional?)
     glob_part = nil
     if last_part = all_path_parts.last?
       glob_part = all_path_parts.pop if last_part.glob?
     end
 
-    path_without_optional_params = all_path_parts.reject(&.optional?)
-
-    process_and_add_path(method, path_without_optional_params, payload, path)
-    optional_parts.each do |optional_part|
-      path_without_optional_params << optional_part
-      process_and_add_path(method, path_without_optional_params, payload, path)
+    # Optional parts stay where they are in the path and are added one after
+    # another, so "/users/?:user_id/tasks" matches "/users/tasks" and
+    # "/users/1/tasks"
+    optional_indexes = all_path_parts.each_index.select { |index| all_path_parts[index].optional? }.to_a
+    (0..optional_indexes.size).each do |count|
+      skipped = optional_indexes[count..]
+      parts = all_path_parts.each_with_index.reject { |(_part, index)| skipped.includes?(index) }.map(&.first).to_a
+      process_and_add_path(method, parts, payload, path)
     end
     if glob_part
-      path_without_optional_params << glob_part
-      process_and_add_path(method, path_without_optional_params, payload, path)
+      all_path_parts << glob_part
+      process_and_add_path(method, all_path_parts, payload, path)
     end
   end
 
