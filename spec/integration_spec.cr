@@ -62,6 +62,21 @@ describe LuckyRouter do
     })
   end
 
+  it "keeps optional route params where they are in the path" do
+    router = LuckyRouter::Matcher(Symbol).new
+    router.add("get", "/users/?:user_id/tasks/?:id", :tasks)
+
+    router.match!("get", "/users/tasks").params.should eq({} of String => String)
+    router.match!("get", "/users/1/tasks").params.should eq({
+      "user_id" => "1",
+    })
+    router.match!("get", "/users/1/tasks/2").params.should eq({
+      "user_id" => "1",
+      "id"      => "2",
+    })
+    router.match("get", "/users/tasks/1").should be_nil
+  end
+
   it "handles root routes" do
     router = LuckyRouter::Matcher(Symbol).new
 
