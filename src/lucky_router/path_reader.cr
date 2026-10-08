@@ -25,12 +25,47 @@ struct LuckerRouter::PathReader
 
   def each(&)
     each_segment do |offset, length, decode|
-      segment = String.new(@path.to_unsafe + offset, length)
-      if decode
-        yield URI.decode(segment)
-      else
-        yield segment
+      yield decode ? self.class.decode_range(@path, offset, length) : @path.byte_slice(offset, length)
+    end
+  end
+
+  # Decode directly from the source bytes into one bounded string allocation.
+  # Like URI.decode, invalid escapes and literal '+' characters are preserved.
+  def self.decode_range(path : String, offset : Int32, length : Int32) : String
+    return "" if length.zero?
+
+    bytes = path.to_slice
+    limit = offset + length
+    String.new(length) do |buffer|
+      written = 0
+      index = offset
+      while index < limit
+        byte = bytes[index]
+        if byte == '%'.ord && index + 2 < limit
+          high = hex_value(bytes[index + 1])
+          low = hex_value(bytes[index + 2])
+          if high >= 0 && low >= 0
+            buffer[written] = (high * 16 + low).to_u8
+            written += 1
+            index += 3
+            next
+          end
+        end
+        # Output never exceeds the input length, including malformed escapes.
+        buffer[written] = byte
+        written += 1
+        index += 1
       end
+      {written, 0}
+    end
+  end
+
+  private def self.hex_value(byte : UInt8) : Int32
+    case byte
+    when 48..57  then byte.to_i - 48
+    when 65..70  then byte.to_i - 55
+    when 97..102 then byte.to_i - 87
+    else              -1
     end
   end
 
