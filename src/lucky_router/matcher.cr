@@ -31,38 +31,64 @@ class LuckyRouter::Matcher(T)
     # Optional parts stay where they are in the path and are added one after
     # another, so "/users/?:user_id/tasks" matches "/users/tasks" and
     # "/users/1/tasks"
-    optional_indexes = all_path_parts.each_index.select { |index| all_path_parts[index].optional? }.to_a
-    (0..optional_indexes.size).each do |count|
-      skipped = optional_indexes[count..]
-      parts = all_path_parts.each_with_index.reject { |(_part, index)| skipped.includes?(index) }.map(&.first).to_a
-      process_and_add_path(method, parts, payload, path)
+    normalized_method = method.downcase
+    optional_count = all_path_parts.count(&.optional?)
+    if optional_count.zero?
+      process_and_add_path(method, normalized_method, all_path_parts, payload, path)
+    else
+      (0..optional_count).each do |count|
+        included = 0
+        parts = Array(PathPart).new(all_path_parts.size)
+        all_path_parts.each do |part|
+          if part.optional?
+            included += 1
+            next if included > count
+          end
+          parts << part
+        end
+        process_and_add_path(method, normalized_method, parts, payload, path)
+      end
     end
     if glob_part
       all_path_parts << glob_part
-      process_and_add_path(method, all_path_parts, payload, path)
+      process_and_add_path(method, normalized_method, all_path_parts, payload, path)
     end
   end
 
   # Array of the path, method, and payload
   def list_routes : Array(Tuple(String, String, T))
-    root.collect_routes.map do |(path_parts, method, payload)|
-      path = "/" + path_parts.reject(&.part.presence.nil?).map(&.part).join("/")
-      Tuple.new(path, method, payload)
+    routes = [] of Tuple(String, String, T)
+    root.each_route do |parts, method, payload|
+      path = String.build do |io|
+        io << '/'
+        first = true
+        parts.each do |part|
+          next if part.part.presence.nil?
+          io << '/' unless first
+          io << part.part
+          first = false
+        end
+      end
+      routes << {path, method, payload}
     end
+    routes
   end
 
-  private def process_and_add_path(method : String, parts : Array(PathPart), payload : T, path : String)
-    if method.downcase == "get"
+  private def process_and_add_path(method : String, normalized_method : String, parts : Array(PathPart), payload : T, path : String)
+    if normalized_method == "get"
       root.process_parts(parts, "head", payload)
     end
 
-    duplicate_check(method, parts, path)
+    duplicate_check(method, normalized_method, parts, path)
 
     root.process_parts(parts, method, payload)
   end
 
-  private def duplicate_check(method : String, parts : Array(PathPart), path : String)
-    normalized_path = method.downcase + PathNormalizer.normalize(parts)
+  private def duplicate_check(method : String, normalized_method : String, parts : Array(PathPart), path : String)
+    normalized_path = String.build do |io|
+      io << normalized_method
+      PathNormalizer.write(io, parts)
+    end
     if duplicated_path = normalized_paths[normalized_path]?
       raise DuplicateRouteError.new(
         method,
@@ -74,42 +100,18 @@ class LuckyRouter::Matcher(T)
   end
 
   def match(method : String, path_to_match : String) : Match(T)?
-    # To avoid allocating an array for the segment parts, we use a static
-    # array with up to 16 segments.
-    parts_static_array = StaticArray(String, 16).new("")
+    root.find_path_match(path_to_match, 0, method)
+  end
 
-    # In the general case we still have to support more than 16 segments.
-    # We'll fallback to using an Array for that case.
-    parts_array = nil
+  # Match without constructing a parameter hash or copying captured strings.
+  def match_payload(method : String, path_to_match : String) : T?
+    root.find_path_payload(path_to_match, 0, method)
+  end
 
-    index = 0
-    LuckerRouter::PathReader.new(path_to_match).each do |part|
-      if index == parts_static_array.size
-        # We don't have any more space in the static array:
-        # more contents to the array.
-        parts_array = Array(String).new(32)
-        parts_array.concat(parts_static_array)
-        parts_array << part
-      elsif parts_array
-        # We are using the fallback array, so push parts there.
-        parts_array << part
-      else
-        # We are still using the static array
-        parts_static_array[index] = part
-      end
-      index += 1
-    end
-
-    match =
-      if parts_array
-        root.find(parts_array, method)
-      else
-        root.find(parts_static_array.to_slice[0...index], method)
-      end
-
-    if match.is_a?(Match)
-      match
-    end
+  # Freeze the current routing structure for optional static indexing and
+  # compact traversal. Later mutations require creating another snapshot.
+  def compile : CompiledMatcher(T)
+    CompiledMatcher(T).new(root)
   end
 
   def match!(method : String, path_to_match : String) : Match(T)

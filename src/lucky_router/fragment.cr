@@ -38,13 +38,28 @@
 # The last fragment of a path is "empty". It does not have static parts or
 # dynamic parts
 class LuckyRouter::Fragment(T)
-  getter dynamic_parts = Array(Fragment(T)).new
-  getter static_parts = Hash(String, Fragment(T)).new
+  @dynamic_parts : Array(Fragment(T))?
+
+  def dynamic_parts : Array(Fragment(T))
+    @dynamic_parts ||= Array(Fragment(T)).new
+  end
+
+  @static_parts : Hash(String, Fragment(T))?
+
+  def static_parts : Hash(String, Fragment(T))
+    @static_parts ||= Hash(String, Fragment(T)).new
+  end
+
   property glob_part : Fragment(T)?
   # Every path can have multiple request methods
   # and since each fragment represents a request path
   # the final step to finding the payload is to search for a matching request method
-  getter method_to_payload = Hash(String, T).new
+  @method_to_payload : Hash(String, T)?
+
+  def method_to_payload : Hash(String, T)
+    @method_to_payload ||= Hash(String, T).new
+  end
+
   getter path_part : PathPart
 
   def initialize(@path_part)
@@ -52,25 +67,30 @@ class LuckyRouter::Fragment(T)
 
   def collect_routes : Array(Tuple(Array(PathPart), String, T))
     routes = [] of Tuple(Array(PathPart), String, T)
-    method_to_payload.each do |method, payload|
-      routes << {[path_part], method, payload}
-    end
-
-    routes += dynamic_parts.flat_map(&.collect_routes).map do |item|
-      item[0].unshift(path_part)
-      item
-    end
-    routes += static_parts.values.flat_map(&.collect_routes).map do |item|
-      item[0].unshift(path_part)
-      item
-    end
-    if gp = glob_part
-      routes += gp.collect_routes.map do |item|
-        item[0].unshift(path_part)
-        item
-      end
+    each_route do |parts, method, payload|
+      routes << {parts.dup, method, payload}
     end
     routes
+  end
+
+  # The path stack is reused during traversal; copy it if retaining it.
+  def each_route(parts = [] of PathPart, &block : Array(PathPart), String, T ->) : Nil
+    parts << path_part
+    if methods = @method_to_payload
+      methods.each { |method, payload| yield parts, method, payload }
+    end
+    if dynamics = @dynamic_parts
+      # ameba:disable Style/VerboseBlock
+      dynamics.each { |fragment| fragment.each_route(parts, &block) }
+    end
+    if statics = @static_parts
+      # ameba:disable Style/VerboseBlock
+      statics.each_value { |fragment| fragment.each_route(parts, &block) }
+    end
+    if glob = glob_part
+      glob.each_route(parts, &block)
+    end
+    parts.pop
   end
 
   # This looks for a matching fragment for the given parts
@@ -117,8 +137,12 @@ class LuckyRouter::Fragment(T)
   end
 
   def match_for_method(method)
-    payload = method_to_payload[method]?
+    payload = payload_for_method(method)
     payload ? Match(T).new(payload, Hash(String, String).new) : nil
+  end
+
+  protected def payload_for_method(method : String) : T?
+    @method_to_payload.try(&.[method]?)
   end
 
   protected def find_match(path_parts, index, method : String) : Match(T)?
@@ -133,14 +157,16 @@ class LuckyRouter::Fragment(T)
   end
 
   private def find_match_with_static_parts(path_part, path_parts, index, method)
-    static_part = static_parts[path_part]?
+    static_part = @static_parts.try(&.[path_part]?)
     return unless static_part
 
     static_part.find_match(path_parts, index, method)
   end
 
   private def find_match_with_dynamics(path_part, path_parts, index, method)
-    dynamic_parts.each do |dynamic_part|
+    return unless dynamics = @dynamic_parts
+
+    dynamics.each do |dynamic_part|
       if match = dynamic_part.find_match(path_parts, index, method)
         match.params[dynamic_part.path_part.name] = path_part
         return match
