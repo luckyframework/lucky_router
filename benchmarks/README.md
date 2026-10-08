@@ -33,6 +33,8 @@ or benchmark cases differ. Timings from shared CI runners are review signals.
 | Single static-child lookup | Compare the sole literal directly, reading the live Hash each time. |
 | Repeated scanning during dynamic backtracking | Sibling traversal reuses a parsed lookahead segment without allocating a cache. |
 | Glob concatenation | `PathSegment.glob_value` copies or decodes the suffix once. |
+| Segment comparison through `Slice#[]` and `memcmp` | `PathSegment` scans with a raw pointer and wrapping arithmetic, and compares literals a word at a time. Profiling showed the sub-slice call and libc `memcmp` at 30–45% of traversal time for short segments. |
+| One call frame per static level | `Fragment#find_path_match` loops through levels that have no dynamic siblings or glob, since a static mismatch there is a miss. Levels that could backtrack still recurse, so precedence is unchanged. |
 | Encoded intermediate strings | `PathReader.decode_range` writes decoded bytes into one bounded string allocation. Decoding is deferred where no static lookup requires it. |
 | Capture-hash resizing | Snapshots preallocate hashes for more than eight known distinct captures; the live matcher keeps mutable-tree compatibility. |
 | Empty parameter hashes | Existing `Match` ownership is preserved. The additive `match_payload` API skips parameter hashes and capture strings. |
@@ -65,6 +67,13 @@ Snapshots therefore reserve only when more than eight distinct captures are
 known. Live matches retain incremental growth because leaves can be shared and
 changed through the public route containers.
 
+Two follow-up candidates were measured and rejected. Keying the snapshot's
+static index by path instead of `{method, path}` halves its entries, which keeps
+small route tables under Crystal's 16-entry linear-scan threshold and made every
+probe slower. Splitting the snapshot node walk into the live matcher's
+`find_path`/`find_segment` shape was neutral overall, so the snapshot keeps its
+single walk.
+
 A shared empty hash or lazy `Match#params` would change mutable ownership or the
 aliasing of copied `Match` structs. The existing API retains a fresh hash; callers
 that do not need captures can use `match_payload` instead.
@@ -87,50 +96,50 @@ Existing `Matcher#match` API (nanoseconds and allocated bytes per operation):
 
 | Case | Baseline ns/op | PR ns/op | Baseline bytes | PR bytes |
 |---|---:|---:|---:|---:|
-| static one | 61.5 | 42.6 | 96 | 64 |
-| static five | 123.2 | 63.1 | 144 | 64 |
-| one capture | 154.2 | 109.4 | 240 | 192 |
-| two captures | 229.7 | 139.6 | 320 | 208 |
-| optional | 176.0 | 111.3 | 272 | 192 |
-| glob | 326.7 | 121.9 | 560 | 208 |
-| encoded capture | 241.6 | 118.7 | 464 | 208 |
-| encoded glob | 475.2 | 134.8 | 976 | 208 |
-| early miss | 127.0 | 16.5 | 160 | 0 |
-| late miss | 125.0 | 36.5 | 128 | 0 |
-| 16 segments | 361.2 | 144.8 | 400 | 64 |
-| 17 segments | 531.3 | 144.1 | 736 | 64 |
-| 100 segments | 3326.2 | 924.9 | 5344 | 64 |
-| 20 captures | 1739.0 | 1031.0 | 3264 | 2432 |
-| wrong method | 102.2 | 33.7 | 96 | 0 |
-| mixed | 606.3 | 229.2 | 936 | 283 |
-| registration | 99209.6 | 68536.2 | 223495 | 152916 |
-| optional registration | 48157.1 | 33469.2 | 101792 | 78557 |
-| enumeration | 146226.5 | 22164.9 | 344831 | 60592 |
-| dynamic backtracking | 668.1 | 566.4 | 272 | 208 |
-| dynamic miss | 422.3 | 253.5 | 64 | 0 |
-| method backtracking | 662.1 | 559.7 | 272 | 208 |
-| method miss | 590.5 | 499.1 | 64 | 0 |
+| static one | 61.4 | 34.2 | 96 | 64 |
+| static five | 120.9 | 42.9 | 144 | 64 |
+| one capture | 155.1 | 97.9 | 240 | 192 |
+| two captures | 229.4 | 124.5 | 320 | 208 |
+| optional | 173.4 | 100.7 | 272 | 192 |
+| glob | 323.0 | 109.1 | 560 | 208 |
+| encoded capture | 237.1 | 107.3 | 464 | 208 |
+| encoded glob | 470.7 | 122.8 | 976 | 208 |
+| early miss | 124.9 | 11.8 | 160 | 0 |
+| late miss | 120.3 | 27.6 | 128 | 0 |
+| 16 segments | 360.0 | 77.9 | 400 | 64 |
+| 17 segments | 506.8 | 80.6 | 736 | 64 |
+| 100 segments | 3284.7 | 363.3 | 5344 | 64 |
+| 20 captures | 1692.7 | 978.5 | 3264 | 2432 |
+| wrong method | 98.7 | 25.7 | 96 | 0 |
+| mixed | 601.2 | 167.1 | 936 | 283 |
+| registration | 97743.8 | 69290.8 | 223511 | 152926 |
+| optional registration | 47358.8 | 33397.1 | 101792 | 78560 |
+| enumeration | 145340.5 | 21545.8 | 344832 | 60592 |
+| dynamic backtracking | 685.9 | 360.4 | 272 | 208 |
+| dynamic miss | 435.6 | 256.7 | 64 | 0 |
+| method backtracking | 682.5 | 348.3 | 272 | 208 |
+| method miss | 608.2 | 299.3 | 64 | 0 |
 
 Optional snapshot compared with the live matcher in the same binary:
 
 | Case | Live ns/op | Snapshot ns/op | Live bytes | Snapshot bytes |
 |---|---:|---:|---:|---:|
-| static one | 42.6 | 29.1 | 64 | 64 |
-| static five | 63.1 | 28.5 | 64 | 64 |
-| one capture | 109.4 | 103.4 | 192 | 192 |
-| two captures | 139.6 | 129.0 | 208 | 208 |
-| glob | 121.9 | 114.1 | 208 | 208 |
-| encoded capture | 118.7 | 112.0 | 208 | 208 |
-| early miss | 16.5 | 20.2 | 0 | 0 |
-| late miss | 36.5 | 43.3 | 0 | 0 |
-| 17 segments | 144.1 | 31.7 | 64 | 64 |
-| 100 segments | 924.9 | 75.9 | 64 | 64 |
-| 20 captures | 1031.0 | 868.6 | 2432 | 1664 |
-| mixed | 229.2 | 133.4 | 283 | 229 |
-| dynamic backtracking | 566.4 | 509.9 | 208 | 208 |
-| dynamic miss | 253.5 | 214.4 | 0 | 0 |
-| method backtracking | 559.7 | 98.5 | 208 | 208 |
-| method miss | 499.1 | 12.1 | 0 | 0 |
+| static one | 34.2 | 28.2 | 64 | 64 |
+| static five | 42.9 | 27.4 | 64 | 64 |
+| one capture | 97.9 | 89.0 | 192 | 192 |
+| two captures | 124.5 | 113.2 | 208 | 208 |
+| glob | 109.1 | 97.9 | 208 | 208 |
+| encoded capture | 107.3 | 100.5 | 208 | 208 |
+| early miss | 11.8 | 15.3 | 0 | 0 |
+| late miss | 27.6 | 31.0 | 0 | 0 |
+| 17 segments | 80.6 | 31.8 | 64 | 64 |
+| 100 segments | 363.3 | 74.0 | 64 | 64 |
+| 20 captures | 978.5 | 838.9 | 2432 | 1664 |
+| mixed | 167.1 | 122.1 | 283 | 229 |
+| dynamic backtracking | 360.4 | 305.3 | 208 | 208 |
+| dynamic miss | 256.7 | 213.2 | 0 | 0 |
+| method backtracking | 348.3 | 86.7 | 208 | 208 |
+| method miss | 299.3 | 10.7 | 0 | 0 |
 
 The snapshot improves static/deep and method-filtered workloads substantially,
 but its early/late miss timings can be slightly slower because of the extra
@@ -142,7 +151,8 @@ can still require a decoded string.
 ## ActionController integration
 
 ActionController 9.0.0 passed all 274 specs with this branch substituted through
-`CRYSTAL_PATH`. Its existing `warmed_dispatch.cr` harness was built against the
+`CRYSTAL_PATH`. These figures were taken before the segment-comparison and
+static-chain follow-up above, so they understate the current dynamic dispatch gain. Its existing `warmed_dispatch.cr` harness was built against the
 original LuckyRouter baseline and this branch, then run base/PR/PR/base with no
 other builds or tests running. Each case uses 15 samples of 100,000 requests
 after warmup. The table averages the two per-process medians:

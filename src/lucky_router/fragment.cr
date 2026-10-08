@@ -145,6 +145,22 @@ class LuckyRouter::Fragment(T)
     @method_to_payload.try(&.[method]?)
   end
 
+  # Mirrors `match_for_method`: a falsey payload (nil or false) is no match.
+  protected def payload_match_for_method(method : String) : T?
+    payload = payload_for_method(method)
+    payload ? payload : nil
+  end
+
+  # Borrowed container views for traversal: nil until first use, and never
+  # allocated by a lookup.
+  protected def static_parts? : Hash(String, Fragment(T))?
+    @static_parts
+  end
+
+  protected def dynamic_parts? : Array(Fragment(T))?
+    @dynamic_parts
+  end
+
   protected def find_match(path_parts, index, method : String) : Match(T)?
     return match_for_method(method) if index >= path_parts.size
 
