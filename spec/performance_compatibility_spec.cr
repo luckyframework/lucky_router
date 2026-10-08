@@ -222,3 +222,27 @@ describe "snapshot indexing of manually constructed fragments" do
     end
   end
 end
+
+describe "snapshots without the exact static index" do
+  it "preserves routes, precedence, method filtering, captures and slash aliases" do
+    router = LuckyRouter::Matcher(Symbol).new
+    ["/", "/a//", "/fixed", "/encoded/a%2Fb", "/optional/?:id", "/files/*:rest", "/:a/:tail/x", "/:b/fixed/:tail"].each do |route|
+      router.add("get", route, :get)
+      router.add("post", route, :post)
+    end
+    indexed = router.compile
+    trie = router.compile(static_index: false)
+    random = Random.new(921)
+    paths = ["", "/", "/a/", "/a//", "/a///", "/fixed", "/fixed/", "/fixed//", "/encoded/a%2Fb", "/optional", "/optional/7", "/files/a%2Fb/c/", "/foo/fixed/x"]
+    tokens = ["", "fixed", "optional", "files", "x", "a%2Fb", "%/", "%FF"]
+    1_000.times { paths << "/#{Array.new(random.rand(0..6)) { tokens.sample(random) }.join('/')}" }
+    paths.each do |path|
+      ["get", "post", "head", "HEAD", "delete"].each do |method|
+        expected = indexed.match(method, path)
+        actual = trie.match(method, path)
+        {actual.try(&.payload), actual.try(&.params)}.should eq({expected.try(&.payload), expected.try(&.params)})
+        trie.match_payload(method, path).should eq(indexed.match_payload(method, path))
+      end
+    end
+  end
+end

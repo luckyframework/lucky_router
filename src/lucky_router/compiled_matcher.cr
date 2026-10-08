@@ -3,14 +3,18 @@
 # Payload objects themselves are retained, rather than deep-copied.
 class LuckyRouter::CompiledMatcher(T)
   @root : Node(T)
-  @static_routes = Hash(Tuple(String, String), T).new
+  @static_routes : Hash(Tuple(String, String), T)?
 
-  def initialize(root : Fragment(T))
+  def initialize(root : Fragment(T), *, static_index : Bool = true)
     @root = Node(T).new(root)
-    index_static(root)
+    if static_index
+      routes = Hash(Tuple(String, String), T).new
+      @static_routes = routes
+      index_static(root, routes)
+    end
   end
 
-  private def index_static(fragment : Fragment(T), parts = [] of String) : Nil
+  private def index_static(fragment : Fragment(T), routes : Hash(Tuple(String, String), T), parts = [] of String) : Nil
     # Use actual static edges, not PathPart metadata: callers can insert
     # fragments under different keys through the public mutable containers.
     unless parts.any? { |part| part.includes?('%') || part.includes?('/') }
@@ -18,28 +22,29 @@ class LuckyRouter::CompiledMatcher(T)
       fragment.method_to_payload.each do |method, payload|
         next unless payload
         if parts.empty?
-          @static_routes[{method, ""}] = payload
+          routes[{method, ""}] = payload
         elsif parts.last.empty?
-          @static_routes[{method, path + "/"}] = payload
+          routes[{method, path + "/"}] = payload
         else
-          @static_routes[{method, path}] = payload
-          @static_routes[{method, path + "/"}] = payload
+          routes[{method, path}] = payload
+          routes[{method, path + "/"}] = payload
         end
       end
     end
     fragment.static_parts.each do |literal, child|
       parts << literal
-      index_static(child, parts)
+      index_static(child, routes, parts)
       parts.pop
     end
   end
 
   def match(method : String, path : String) : Match(T)?
-    if payload = @static_routes[{method, path}]?
-      Match(T).new(payload, Hash(String, String).new)
-    else
-      @root.find_path_match(path, 0, method)
+    if routes = @static_routes
+      if payload = routes[{method, path}]?
+        return Match(T).new(payload, Hash(String, String).new)
+      end
     end
+    @root.find_path_match(path, 0, method)
   end
 
   def match!(method : String, path : String) : Match(T)
@@ -47,7 +52,12 @@ class LuckyRouter::CompiledMatcher(T)
   end
 
   def match_payload(method : String, path : String) : T?
-    @static_routes[{method, path}]? || @root.find_path_payload(path, 0, method)
+    if routes = @static_routes
+      if payload = routes[{method, path}]?
+        return payload
+      end
+    end
+    @root.find_path_payload(path, 0, method)
   end
 
   private class Node(T)

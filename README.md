@@ -67,6 +67,11 @@ Call `router.compile` again after adding routes or mutating the public fragment
 containers. Updating a payload object's contents is visible through either
 matcher because the payload object is shared.
 
+Frameworks with their own static lookup can use `router.compile(static_index: false)`
+to avoid a duplicate index and its probe. All routes, including static and
+encoded static paths, remain available through the compact trie. The default
+keeps the exact static index enabled.
+
 See [performance measurements and tradeoffs](benchmarks/README.md) for the
 benchmark commands and the alternatives evaluated.
 

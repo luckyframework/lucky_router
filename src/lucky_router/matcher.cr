@@ -110,8 +110,10 @@ class LuckyRouter::Matcher(T)
 
   # Freeze the current routing structure for optional static indexing and
   # compact traversal. Later mutations require creating another snapshot.
-  def compile : CompiledMatcher(T)
-    CompiledMatcher(T).new(root)
+  # Disable the exact static index when an integrating framework already
+  # handles those paths. Static routes still match through the compact trie.
+  def compile(*, static_index : Bool = true) : CompiledMatcher(T)
+    CompiledMatcher(T).new(root, static_index: static_index)
   end
 
   def match!(method : String, path_to_match : String) : Match(T)
