@@ -142,3 +142,83 @@ describe LuckyRouter::CompiledMatcher do
     compiled.match!("get", "/fixed").params.should be_empty
   end
 end
+
+describe "streaming and compiled traversal compatibility" do
+  it "agrees with the segment-array Fragment API on generated paths" do
+    random = Random.new(731)
+    router = LuckyRouter::Matcher(Int32).new
+    ["/", "/fixed", "/a/b/c", "/users/:id", "/users/:id/edit", "/files/*:rest", "/optional/?:id/?:tail", "/:a/:tail/x", "/:b/fixed/:tail", "/unicode/é", "/space/a b", "/repeat/:id/:id"].each_with_index do |route, i|
+      router.add("get", route, i + 1)
+    end
+    compiled = router.compile
+    segments = ["", "users", "files", "optional", "a", "b", "x", "fixed", "unicode", "é", "space", "a b", "%", "%2", "%2F", "%20", "%FF", "%00", "%zz", "%/", "%A/", "%25", "%A%20", "+", "repeat"]
+    10_000.times do
+      path = Array.new(random.rand(0..8)) { segments.sample(random) }.join('/')
+      method = ["get", "head", "delete", "GET"].sample(random)
+      expected = router.root.find_match(LuckerRouter::PathReader.new(path).to_a, method)
+      [router.match(method, path), compiled.match(method, path)].each do |actual|
+        {actual.try(&.payload), actual.try(&.params)}.should eq({expected.try(&.payload), expected.try(&.params)})
+      end
+      router.match_payload(method, path).should eq(expected.try(&.payload))
+      compiled.match_payload(method, path).should eq(expected.try(&.payload))
+    end
+  end
+
+  it "retains the existing false and nil payload behavior" do
+    router = LuckyRouter::Matcher(Bool?).new
+    router.add("get", "/false", false)
+    router.add("get", "/nil", nil)
+    router.add("get", "/true/:id", true)
+    compiled = router.compile
+    ["/false", "/nil"].each do |path|
+      router.match("get", path).should be_nil
+      router.match_payload("get", path).should be_nil
+      compiled.match("get", path).should be_nil
+      compiled.match_payload("get", path).should be_nil
+    end
+    compiled.match!("get", "/true/value").params.should eq({"id" => "value"})
+    router.match_payload("get", "/true/value").should be_true
+  end
+end
+
+describe "bounded percent decoding" do
+  it "agrees with URI.decode for generated raw byte ranges" do
+    random = Random.new(918)
+    1_000.times do
+      value = String.new(Bytes.new(random.rand(0..64)) { random.rand(0..255).to_u8 })
+      path = "prefix" + value + "suffix"
+      LuckerRouter::PathReader.decode_range(path, 6, value.bytesize).should eq(URI.decode(value))
+    end
+  end
+end
+
+describe "compiled capture capacity" do
+  it "preserves bindings for many captures and repeated names" do
+    router = LuckyRouter::Matcher(Symbol).new
+    route = "/many/" + (1..80).map { |i| ":p#{i}" }.join('/')
+    path = "/many/" + (1..80).map { |i| "v#{i}" }.join('/')
+    router.add("get", route, :many)
+    router.add("get", "/repeat/:id/:id/*:id", :repeated)
+    compiled = router.compile
+    compiled.match!("get", path).params.should eq(router.match!("get", path).params)
+    compiled.match!("get", "/repeat/first/second/third/fourth").params.should eq({"id" => "first"})
+  end
+end
+
+describe "snapshot indexing of manually constructed fragments" do
+  it "uses static edge keys and branch kinds rather than PathPart metadata" do
+    router = LuckyRouter::Matcher(Symbol).new
+    static = LuckyRouter::Fragment(Symbol).new(LuckyRouter::PathPart.new("display"))
+    static.method_to_payload["get"] = :static
+    router.root.static_parts["actual"] = static
+    glob = LuckyRouter::Fragment(Symbol).new(LuckyRouter::PathPart.new("wildcard"))
+    glob.method_to_payload["get"] = :glob
+    router.root.glob_part = glob
+    compiled = router.compile
+    ["actual", "actual/", "display", "display/", "wildcard", ""].each do |path|
+      expected = router.match("get", path)
+      actual = compiled.match("get", path)
+      {actual.try(&.payload), actual.try(&.params)}.should eq({expected.try(&.payload), expected.try(&.params)})
+    end
+  end
+end

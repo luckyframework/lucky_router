@@ -37,8 +37,9 @@ struct LuckyRouter::PathSegment
     path.byte_slice(offset, length)
   end
 
+  @[AlwaysInline]
   def ==(other : String) : Bool
-    to_slice == other.to_slice
+    length == other.bytesize && to_slice == other.to_slice
   end
 
   def hash(hasher)
@@ -70,7 +71,8 @@ end
 
 class String
   # Hash(String, ...) compares its stored key to the borrowed lookup key.
+  @[AlwaysInline]
   def ==(other : LuckyRouter::PathSegment) : Bool
-    to_slice == other.to_slice
+    other == self
   end
 end

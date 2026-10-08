@@ -31,6 +31,45 @@ router.match("delete", "/users/1").params # {"id" => "1"}
 router.match("get", "/missing_route").payload # nil
 ```
 
+## Matching without parameters
+
+When only the payload is needed, `match_payload` skips the parameter hash and
+capture strings:
+
+```crystal
+router.match_payload("delete", "/users/1") # :delete
+router.match_payload("get", "/missing")  # nil
+```
+
+The existing `match` and `match!` APIs still return a separate mutable parameter
+hash for every successful request. Matching methods remain case-sensitive;
+registering a GET route also registers the existing lowercase `head` alias.
+
+## Compiling registered routes
+
+Applications that finish registering routes before serving requests can opt into
+a compiled snapshot:
+
+```crystal
+compiled = router.compile
+compiled.match!("delete", "/users/1").params # {"id" => "1"}
+compiled.match_payload("get", "/users")     # :index
+```
+
+Snapshots index exact static paths, compress literal prefixes, and exclude
+dynamic siblings that cannot handle the requested method. They preserve route
+precedence, capture names, optional arguments, globs, URI decoding, and trailing
+slash behavior. Compilation takes extra time and memory; the original matcher
+keeps its live route tree and has no static-index lookup overhead.
+
+A snapshot retains the routes and payload references present when it was built.
+Call `router.compile` again after adding routes or mutating the public fragment
+containers. Updating a payload object's contents is visible through either
+matcher because the payload object is shared.
+
+See [performance measurements and tradeoffs](benchmarks/README.md) for the
+benchmark commands and the alternatives evaluated.
+
 ## Contributing
 
 1. Fork it ( https://github.com/luckyframework/lucky_router/fork )

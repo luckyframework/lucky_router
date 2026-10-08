@@ -35,6 +35,8 @@ struct LuckyRouter::PathPart
   getter part : String
   getter name : String
 
+  def_equals_and_hash @part
+
   def initialize(@part)
     name = part.lchop('?').lchop('*').lchop(':')
     @name = unnamed_glob?(name) ? "glob" : name

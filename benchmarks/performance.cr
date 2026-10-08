@@ -103,7 +103,20 @@ if router.responds_to?(:compile)
     cursor = (cursor + 1) % mixed.size
     RouterPerformance.consume(compiled.match("get", path))
   end
+end
+
+if siblings.responds_to?(:compile)
   compiled_siblings = siblings.compile
   RouterPerformance.measure("compiled_dynamic_backtracking") { RouterPerformance.consume(compiled_siblings.match("get", "/value/end99")) }
   RouterPerformance.measure("compiled_dynamic_miss") { RouterPerformance.consume(compiled_siblings.match("get", "/value/missing")) }
+end
+
+methods = LuckyRouter::Matcher(Int32).new
+100.times { |i| methods.add("method#{i}", "/:capture#{i}/end#{i}", i + 1) }
+RouterPerformance.measure("method_backtracking") { RouterPerformance.consume(methods.match("method99", "/value/end99")) }
+RouterPerformance.measure("method_miss") { RouterPerformance.consume(methods.match("absent", "/value/end99")) }
+if methods.responds_to?(:compile)
+  compiled_methods = methods.compile
+  RouterPerformance.measure("compiled_method_backtracking") { RouterPerformance.consume(compiled_methods.match("method99", "/value/end99")) }
+  RouterPerformance.measure("compiled_method_miss") { RouterPerformance.consume(compiled_methods.match("absent", "/value/end99")) }
 end
