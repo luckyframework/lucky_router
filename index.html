@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Crystal Docs 1.20.3">
+<meta name="generator" content="Crystal Docs 1.21.0">
 <meta name="crystal_docs.project_version" content="main">
 <meta name="crystal_docs.project_name" content="lucky_router">
 
@@ -77,6 +77,11 @@
       
         <ul>
   
+  <li class=" " data-id="lucky_router/LuckyRouter/CompiledMatcher" data-name="luckyrouter::compiledmatcher(t)">
+      <a href="LuckyRouter/CompiledMatcher.html">CompiledMatcher</a>
+      
+    </li>
+  
   <li class=" " data-id="lucky_router/LuckyRouter/DuplicateRouteError" data-name="luckyrouter::duplicaterouteerror">
       <a href="LuckyRouter/DuplicateRouteError.html">DuplicateRouteError</a>
       
@@ -127,8 +132,18 @@
       
     </li>
   
+  <li class=" " data-id="lucky_router/LuckyRouter/PathSegment" data-name="luckyrouter::pathsegment">
+      <a href="LuckyRouter/PathSegment.html">PathSegment</a>
+      
+    </li>
+  
 </ul>
 
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/String" data-name="string">
+      <a href="String.html">String</a>
       
     </li>
   
@@ -171,6 +186,43 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
 router.match(<span class="s">&quot;delete&quot;</span>, <span class="s">&quot;/users/1&quot;</span>).payload <span class="c"># :delete</span>
 router.match(<span class="s">&quot;delete&quot;</span>, <span class="s">&quot;/users/1&quot;</span>).params <span class="c"># {&quot;id&quot; =&gt; &quot;1&quot;}</span>
 router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/missing_route&quot;</span>).payload <span class="c"># nil</span></code></pre>
+<h2><a id="matching-without-parameters" class="anchor" href="#matching-without-parameters">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Matching without parameters</h2>
+<p>When only the payload is needed, <code>match_payload</code> skips the parameter hash and
+capture strings:</p>
+<pre><code class="language-crystal">router.match_payload(<span class="s">&quot;delete&quot;</span>, <span class="s">&quot;/users/1&quot;</span>) <span class="c"># :delete</span>
+router.match_payload(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/missing&quot;</span>)  <span class="c"># nil</span></code></pre>
+<p>The existing <code>match</code> and <code>match!</code> APIs still return a separate mutable parameter
+hash for every successful request. Matching methods remain case-sensitive;
+registering a GET route also registers the existing lowercase <code>head</code> alias.</p>
+<h2><a id="compiling-registered-routes" class="anchor" href="#compiling-registered-routes">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Compiling registered routes</h2>
+<p>Applications that finish registering routes before serving requests can opt into
+a compiled snapshot:</p>
+<pre><code class="language-crystal">compiled <span class="o">=</span> router.compile
+compiled.match!(<span class="s">&quot;delete&quot;</span>, <span class="s">&quot;/users/1&quot;</span>).params <span class="c"># {&quot;id&quot; =&gt; &quot;1&quot;}</span>
+compiled.match_payload(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/users&quot;</span>)     <span class="c"># :index</span></code></pre>
+<p>Snapshots index exact static paths, compress literal prefixes, and exclude
+dynamic siblings that cannot handle the requested method. They preserve route
+precedence, capture names, optional arguments, globs, URI decoding, and trailing
+slash behavior. Compilation takes extra time and memory; the original matcher
+keeps its live route tree and has no static-index lookup overhead.</p>
+<p>A snapshot retains the routes and payload references present when it was built.
+Call <code>router.compile</code> again after adding routes or mutating the public fragment
+containers. Updating a payload object's contents is visible through either
+matcher because the payload object is shared.</p>
+<p>Frameworks with their own static lookup can use <code>router.compile(static_index: false)</code>
+to avoid a duplicate index and its probe. All routes, including static and
+encoded static paths, remain available through the compact trie. The default
+keeps the exact static index enabled.</p>
+<p>See <a href="benchmarks/README.md">performance measurements and tradeoffs</a> for the
+benchmark commands and the alternatives evaluated.</p>
 <h2><a id="contributing" class="anchor" href="#contributing">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>

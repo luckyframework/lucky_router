@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Crystal Docs 1.20.3">
+<meta name="generator" content="Crystal Docs 1.21.0">
 <meta name="crystal_docs.project_version" content="main">
 <meta name="crystal_docs.project_name" content="lucky_router">
 
@@ -77,6 +77,11 @@
       
         <ul>
   
+  <li class=" " data-id="lucky_router/LuckyRouter/CompiledMatcher" data-name="luckyrouter::compiledmatcher(t)">
+      <a href="../LuckyRouter/CompiledMatcher.html">CompiledMatcher</a>
+      
+    </li>
+  
   <li class=" " data-id="lucky_router/LuckyRouter/DuplicateRouteError" data-name="luckyrouter::duplicaterouteerror">
       <a href="../LuckyRouter/DuplicateRouteError.html">DuplicateRouteError</a>
       
@@ -127,8 +132,18 @@
       
     </li>
   
+  <li class=" " data-id="lucky_router/LuckyRouter/PathSegment" data-name="luckyrouter::pathsegment">
+      <a href="../LuckyRouter/PathSegment.html">PathSegment</a>
+      
+    </li>
+  
 </ul>
 
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/String" data-name="string">
+      <a href="../String.html">String</a>
       
     </li>
   
@@ -204,7 +219,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
   </h2>
   
     
-      <a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/matcher.cr#L18" target="_blank">
+      <a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/matcher.cr#L18" target="_blank">
         lucky_router/matcher.cr
       </a>
     
@@ -238,6 +253,13 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       </li>
     
       <li class="entry-summary">
+        <a href="#compile%28%2A%2Cstatic_index%3ABool%3Dtrue%29%3ACompiledMatcher%28T%29-instance-method" class="signature"><strong>#compile</strong>(*, static_index : Bool = <span class="n">true</span>) : CompiledMatcher(T)</a>
+        
+          <div class="summary"><p>Freeze the current routing structure for optional static indexing and compact traversal.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
         <a href="#list_routes%3AArray%28Tuple%28String%2CString%2CT%29%29-instance-method" class="signature"><strong>#list_routes</strong> : Array(Tuple(String, String, T))</a>
         
           <div class="summary"><p>Array of the path, method, and payload</p></div>
@@ -251,6 +273,13 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
     
       <li class="entry-summary">
         <a href="#match%21%28method%3AString%2Cpath_to_match%3AString%29%3AMatch%28T%29-instance-method" class="signature"><strong>#match!</strong>(method : String, path_to_match : String) : Match(T)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match_payload%28method%3AString%2Cpath_to_match%3AString%29%3AT%7CNil-instance-method" class="signature"><strong>#match_payload</strong>(method : String, path_to_match : String) : T | Nil</a>
+        
+          <div class="summary"><p>Match without constructing a parameter hash or copying captured strings.</p></div>
         
       </li>
     
@@ -319,7 +348,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
     <div class="entry-detail" id="add(method:String,path:String,payload:T)-instance-method">
       <div class="signature">
         
-        def <strong>add</strong>(method : String, path : String, payload : T)
+        def <strong>add</strong>(method : <a href="../String.html">String</a>, path : <a href="../String.html">String</a>, payload : T)
 
         <a class="method-permalink" href="#add%28method%3AString%2Cpath%3AString%2Cpayload%3AT%29-instance-method">#</a>
       </div>
@@ -327,7 +356,31 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/matcher.cr#L23" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/matcher.cr#L23" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="compile(*,static_index:Bool=true):CompiledMatcher(T)-instance-method">
+      <div class="signature">
+        
+        def <strong>compile</strong>(*, static_index : Bool = <span class="n">true</span>) : <a href="../LuckyRouter/CompiledMatcher.html">CompiledMatcher</a>(T)
+
+        <a class="method-permalink" href="#compile%28%2A%2Cstatic_index%3ABool%3Dtrue%29%3ACompiledMatcher%28T%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Freeze the current routing structure for optional static indexing and
+compact traversal. Later mutations require creating another snapshot.
+Disable the exact static index when an integrating framework already
+handles those paths. Static routes still match through the compact trie.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/matcher.cr#L115" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -335,7 +388,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
     <div class="entry-detail" id="list_routes:Array(Tuple(String,String,T))-instance-method">
       <div class="signature">
         
-        def <strong>list_routes</strong> : Array(Tuple(String, String, T))
+        def <strong>list_routes</strong> : Array(Tuple(<a href="../String.html">String</a>, <a href="../String.html">String</a>, T))
 
         <a class="method-permalink" href="#list_routes%3AArray%28Tuple%28String%2CString%2CT%29%29-instance-method">#</a>
       </div>
@@ -348,7 +401,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/matcher.cr#L47" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/matcher.cr#L59" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -356,7 +409,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
     <div class="entry-detail" id="match(method:String,path_to_match:String):Match(T)|Nil-instance-method">
       <div class="signature">
         
-        def <strong>match</strong>(method : String, path_to_match : String) : <a href="../LuckyRouter/Match.html">Match</a>(T) | Nil
+        def <strong>match</strong>(method : <a href="../String.html">String</a>, path_to_match : <a href="../String.html">String</a>) : <a href="../LuckyRouter/Match.html">Match</a>(T) | Nil
 
         <a class="method-permalink" href="#match%28method%3AString%2Cpath_to_match%3AString%29%3AMatch%28T%29%7CNil-instance-method">#</a>
       </div>
@@ -364,7 +417,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/matcher.cr#L76" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/matcher.cr#L102" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -372,7 +425,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
     <div class="entry-detail" id="match!(method:String,path_to_match:String):Match(T)-instance-method">
       <div class="signature">
         
-        def <strong>match!</strong>(method : String, path_to_match : String) : <a href="../LuckyRouter/Match.html">Match</a>(T)
+        def <strong>match!</strong>(method : <a href="../String.html">String</a>, path_to_match : <a href="../String.html">String</a>) : <a href="../LuckyRouter/Match.html">Match</a>(T)
 
         <a class="method-permalink" href="#match%21%28method%3AString%2Cpath_to_match%3AString%29%3AMatch%28T%29-instance-method">#</a>
       </div>
@@ -380,7 +433,28 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/matcher.cr#L115" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/matcher.cr#L119" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match_payload(method:String,path_to_match:String):T|Nil-instance-method">
+      <div class="signature">
+        
+        def <strong>match_payload</strong>(method : <a href="../String.html">String</a>, path_to_match : <a href="../String.html">String</a>) : T | Nil
+
+        <a class="method-permalink" href="#match_payload%28method%3AString%2Cpath_to_match%3AString%29%3AT%7CNil-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Match without constructing a parameter hash or copying captured strings.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/matcher.cr#L107" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -396,7 +470,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/matcher.cr#L21" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/matcher.cr#L21" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -417,7 +491,7 @@ router.match(<span class="s">&quot;get&quot;</span>, <span class="s">&quot;/user
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/matcher.cr#L20" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/matcher.cr#L20" target="_blank">View source</a>]
         
       </div>
     </div>

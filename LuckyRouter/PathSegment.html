@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Crystal Docs 1.21.0">
+<meta name="crystal_docs.project_version" content="main">
+<meta name="crystal_docs.project_name" content="lucky_router">
+
+
+
+<link href="../css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../js/doc.js"></script>
+
+  <meta name="repository-name" content="lucky_router">
+  <title>LuckyRouter::PathSegment - lucky_router main</title>
+  <script type="text/javascript">
+    CrystalDocs.base_path = "../";
+  </script>
+</head>
+<body>
+
+<svg class="hidden">
+  <symbol id="octicon-link" viewBox="0 0 16 16">
+    <path fill="currentColor" fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
+  </symbol>
+</svg>
+<input type="checkbox" id="sidebar-btn">
+<label for="sidebar-btn" id="sidebar-btn-label">
+  <svg class="open" xmlns="http://www.w3.org/2000/svg" height="2em" width="2em" viewBox="0 0 512 512"><title>Open Sidebar</title><path fill="currentColor" d="M80 96v64h352V96H80zm0 112v64h352v-64H80zm0 112v64h352v-64H80z"></path></svg>
+  <svg class="close" xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 512 512"><title>Close Sidebar</title><path fill="currentColor" d="m118.6 73.4-45.2 45.2L210.7 256 73.4 393.4l45.2 45.2L256 301.3l137.4 137.3 45.2-45.2L301.3 256l137.3-137.4-45.2-45.2L256 210.7Z"></path></svg>
+</label>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="project-summary">
+      <h1 class="project-name">
+        <a href="../index.html">
+          lucky_router
+        </a>
+      </h1>
+
+      <span class="project-version">
+        main
+      </span>
+    </div>
+  </div>
+
+  <div class="search-results hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class="parent " data-id="lucky_router/LuckerRouter" data-name="luckerrouter">
+      <a href="../LuckerRouter.html">LuckerRouter</a>
+      
+        <ul>
+  
+  <li class=" " data-id="lucky_router/LuckerRouter/PathReader" data-name="luckerrouter::pathreader">
+      <a href="../LuckerRouter/PathReader.html">PathReader</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent open current" data-id="lucky_router/LuckyRouter" data-name="luckyrouter">
+      <a href="../LuckyRouter.html">LuckyRouter</a>
+      
+        <ul>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/CompiledMatcher" data-name="luckyrouter::compiledmatcher(t)">
+      <a href="../LuckyRouter/CompiledMatcher.html">CompiledMatcher</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/DuplicateRouteError" data-name="luckyrouter::duplicaterouteerror">
+      <a href="../LuckyRouter/DuplicateRouteError.html">DuplicateRouteError</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/Fragment" data-name="luckyrouter::fragment(t)">
+      <a href="../LuckyRouter/Fragment.html">Fragment</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/InvalidGlobError" data-name="luckyrouter::invalidgloberror">
+      <a href="../LuckyRouter/InvalidGlobError.html">InvalidGlobError</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/InvalidPathError" data-name="luckyrouter::invalidpatherror">
+      <a href="../LuckyRouter/InvalidPathError.html">InvalidPathError</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/LuckyRouterError" data-name="luckyrouter::luckyroutererror">
+      <a href="../LuckyRouter/LuckyRouterError.html">LuckyRouterError</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/Match" data-name="luckyrouter::match(t)">
+      <a href="../LuckyRouter/Match.html">Match</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/Matcher" data-name="luckyrouter::matcher(t)">
+      <a href="../LuckyRouter/Matcher.html">Matcher</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/NoMatch" data-name="luckyrouter::nomatch">
+      <a href="../LuckyRouter/NoMatch.html">NoMatch</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/PathNormalizer" data-name="luckyrouter::pathnormalizer">
+      <a href="../LuckyRouter/PathNormalizer.html">PathNormalizer</a>
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/LuckyRouter/PathPart" data-name="luckyrouter::pathpart">
+      <a href="../LuckyRouter/PathPart.html">PathPart</a>
+      
+    </li>
+  
+  <li class=" current" data-id="lucky_router/LuckyRouter/PathSegment" data-name="luckyrouter::pathsegment">
+      <a href="../LuckyRouter/PathSegment.html">PathSegment</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/String" data-name="string">
+      <a href="../String.html">String</a>
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<h1 class="type-name">
+
+  <span class="kind">
+    struct
+  </span> LuckyRouter::<wbr>PathSegment
+
+</h1>
+
+
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../LuckyRouter/PathSegment.html">LuckyRouter::PathSegment</a></li><li class="superclass">Struct</li><li class="superclass">Value</li><li class="superclass">Object</li></ul>
+
+
+
+
+  <h2>
+    <a id="overview" class="anchor" href="#overview">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Overview
+  </h2>
+
+  <p>A borrowed byte view. Keeping the source String alive makes the view safe
+throughout traversal, including dynamic backtracking.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2>
+    <a id="defined-in" class="anchor" href="#defined-in">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Defined in:
+  </h2>
+  
+    
+      <a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_segment.cr#L3" target="_blank">
+        lucky_router/path_segment.cr
+      </a>
+    
+    <br/>
+  
+
+
+
+  
+    <h2>
+      <a id="constant-summary" class="anchor" href="#constant-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+      Constant Summary
+    </h2>
+  
+  <dl>
+    
+      <dt class="entry-const" id="PERCENT">
+        <strong>PERCENT</strong> = <code><span class="s">&#39;%&#39;</span>.ord.to_u8</code>
+      </dt>
+      
+    
+      <dt class="entry-const" id="SLASH">
+        <strong>SLASH</strong> = <code><span class="s">&#39;/&#39;</span>.ord.to_u8</code>
+      </dt>
+      
+    
+  </dl>
+
+
+
+  
+  <h2>
+    <a id="constructors" class="anchor" href="#constructors">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructors
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#new%28path%3AString%2Coffset%3AInt32%2Clength%3AInt32%29-class-method" class="signature"><strong>.new</strong>(path : String, offset : Int32, length : Int32)</a>
+        
+      </li>
+    
+  </ul>
+
+
+  
+  <h2>
+    <a id="class-method-summary" class="anchor" href="#class-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Class Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#glob_value%28path%3AString%2Coffset%3AInt32%29%3AString-class-method" class="signature"><strong>.glob_value</strong>(path : String, offset : Int32) : String</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#read%28path%3AString%2Coffset%3AInt32%29%3ATuple%28PathSegment%2CInt32%2CBool%29-class-method" class="signature"><strong>.read</strong>(path : String, offset : Int32) : Tuple(PathSegment, Int32, Bool)</a>
+        
+          <div class="summary"><p>Scans with a raw pointer and wrapping arithmetic: the loop condition already bounds <code>index</code>, so per-byte bounds and overflow checks only add branches to the hottest loop in the router.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#same_bytes%3F%28left%3APointer%28UInt8%29%2Cright%3APointer%28UInt8%29%2Clength%3AInt32%29%3ABool-class-method" class="signature"><strong>.same_bytes?</strong>(left : Pointer(UInt8), right : Pointer(UInt8), length : Int32) : Bool</a>
+        
+          <div class="summary"><p>Route literals are short, so a word-at-a-time compare beats a libc call.</p></div>
+        
+      </li>
+    
+  </ul>
+
+
+  
+
+  
+  <h2>
+    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#%3D%3D%28other%3AString%29%3ABool-instance-method" class="signature"><strong>#==</strong>(other : String) : Bool</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#hash%28hasher%29-instance-method" class="signature"><strong>#hash</strong>(hasher)</a>
+        
+          <div class="summary"><p>See <code>Object#hash(hasher)</code></p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#length%3AInt32-instance-method" class="signature"><strong>#length</strong> : Int32</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#offset%3AInt32-instance-method" class="signature"><strong>#offset</strong> : Int32</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#path%3AString-instance-method" class="signature"><strong>#path</strong> : String</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#to_slice%3ABytes-instance-method" class="signature"><strong>#to_slice</strong> : Bytes</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#to_unsafe%3APointer%28UInt8%29-instance-method" class="signature"><strong>#to_unsafe</strong> : Pointer(UInt8)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#value%3AString-instance-method" class="signature"><strong>#value</strong> : String</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+  <div class="methods-inherited">
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
+  </div>
+
+  
+  <h2>
+    <a id="constructor-detail" class="anchor" href="#constructor-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructor Detail
+  </h2>
+  
+    <div class="entry-detail" id="new(path:String,offset:Int32,length:Int32)-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(path : <a href="../String.html">String</a>, offset : Int32, length : Int32)
+
+        <a class="method-permalink" href="#new%28path%3AString%2Coffset%3AInt32%2Clength%3AInt32%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_segment.cr#L11" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+  
+  <h2>
+    <a id="class-method-detail" class="anchor" href="#class-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Class Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="glob_value(path:String,offset:Int32):String-class-method">
+      <div class="signature">
+        
+        def self.<strong>glob_value</strong>(path : <a href="../String.html">String</a>, offset : Int32) : <a href="../String.html">String</a>
+
+        <a class="method-permalink" href="#glob_value%28path%3AString%2Coffset%3AInt32%29%3AString-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_segment.cr#L100" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="read(path:String,offset:Int32):Tuple(PathSegment,Int32,Bool)-class-method">
+      <div class="signature">
+        
+        def self.<strong>read</strong>(path : <a href="../String.html">String</a>, offset : Int32) : Tuple(<a href="../LuckyRouter/PathSegment.html">PathSegment</a>, Int32, Bool)
+
+        <a class="method-permalink" href="#read%28path%3AString%2Coffset%3AInt32%29%3ATuple%28PathSegment%2CInt32%2CBool%29-class-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Scans with a raw pointer and wrapping arithmetic: the loop condition
+already bounds <code>index</code>, so per-byte bounds and overflow checks only add
+branches to the hottest loop in the router.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_segment.cr#L18" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="same_bytes?(left:Pointer(UInt8),right:Pointer(UInt8),length:Int32):Bool-class-method">
+      <div class="signature">
+        
+        def self.<strong>same_bytes?</strong>(left : Pointer(UInt8), right : Pointer(UInt8), length : Int32) : Bool
+
+        <a class="method-permalink" href="#same_bytes%3F%28left%3APointer%28UInt8%29%2Cright%3APointer%28UInt8%29%2Clength%3AInt32%29%3ABool-class-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Route literals are short, so a word-at-a-time compare beats a libc call.
+Reads stay inside both buffers because <code><a href="../LuckyRouter/PathSegment.html#length%3AInt32-instance-method">#length</a></code> bytes remain in each.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_segment.cr#L60" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+  
+
+  
+  <h2>
+    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="==(other:String):Bool-instance-method">
+      <div class="signature">
+        
+        def <strong>==</strong>(other : <a href="../String.html">String</a>) : Bool
+
+        <a class="method-permalink" href="#%3D%3D%28other%3AString%29%3ABool-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_segment.cr#L53" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="hash(hasher)-instance-method">
+      <div class="signature">
+        
+        def <strong>hash</strong>(hasher)
+
+        <a class="method-permalink" href="#hash%28hasher%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from struct Struct
+            </div>
+          
+          <p>See <code>Object#hash(hasher)</code></p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_segment.cr#L96" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="length:Int32-instance-method">
+      <div class="signature">
+        
+        def <strong>length</strong> : Int32
+
+        <a class="method-permalink" href="#length%3AInt32-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_segment.cr#L9" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="offset:Int32-instance-method">
+      <div class="signature">
+        
+        def <strong>offset</strong> : Int32
+
+        <a class="method-permalink" href="#offset%3AInt32-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_segment.cr#L8" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="path:String-instance-method">
+      <div class="signature">
+        
+        def <strong>path</strong> : <a href="../String.html">String</a>
+
+        <a class="method-permalink" href="#path%3AString-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_segment.cr#L7" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="to_slice:Bytes-instance-method">
+      <div class="signature">
+        
+        def <strong>to_slice</strong> : Bytes
+
+        <a class="method-permalink" href="#to_slice%3ABytes-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_segment.cr#L44" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="to_unsafe:Pointer(UInt8)-instance-method">
+      <div class="signature">
+        
+        def <strong>to_unsafe</strong> : Pointer(UInt8)
+
+        <a class="method-permalink" href="#to_unsafe%3APointer%28UInt8%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_segment.cr#L40" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="value:String-instance-method">
+      <div class="signature">
+        
+        def <strong>value</strong> : <a href="../String.html">String</a>
+
+        <a class="method-permalink" href="#value%3AString-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_segment.cr#L48" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+</div>
+
+</body>
+</html>

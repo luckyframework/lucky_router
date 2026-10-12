@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Crystal Docs 1.20.3">
+<meta name="generator" content="Crystal Docs 1.21.0">
 <meta name="crystal_docs.project_version" content="main">
 <meta name="crystal_docs.project_name" content="lucky_router">
 
@@ -77,6 +77,11 @@
       
         <ul>
   
+  <li class=" " data-id="lucky_router/LuckyRouter/CompiledMatcher" data-name="luckyrouter::compiledmatcher(t)">
+      <a href="../LuckyRouter/CompiledMatcher.html">CompiledMatcher</a>
+      
+    </li>
+  
   <li class=" " data-id="lucky_router/LuckyRouter/DuplicateRouteError" data-name="luckyrouter::duplicaterouteerror">
       <a href="../LuckyRouter/DuplicateRouteError.html">DuplicateRouteError</a>
       
@@ -127,8 +132,18 @@
       
     </li>
   
+  <li class=" " data-id="lucky_router/LuckyRouter/PathSegment" data-name="luckyrouter::pathsegment">
+      <a href="../LuckyRouter/PathSegment.html">PathSegment</a>
+      
+    </li>
+  
 </ul>
 
+      
+    </li>
+  
+  <li class=" " data-id="lucky_router/String" data-name="string">
+      <a href="../String.html">String</a>
       
     </li>
   
@@ -204,7 +219,7 @@ path_part.name <span class="o">=&gt;</span> <span class="s">&quot;users&quot;</s
   </h2>
   
     
-      <a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/path_part.cr#L29" target="_blank">
+      <a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_part.cr#L29" target="_blank">
         lucky_router/path_part.cr
       </a>
     
@@ -267,7 +282,19 @@ path_part.name <span class="o">=&gt;</span> <span class="s">&quot;users&quot;</s
   <ul class="list-summary">
     
       <li class="entry-summary">
+        <a href="#%3D%3D%28other%3Aself%29-instance-method" class="signature"><strong>#==</strong>(other : <span class="k">self</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
         <a href="#glob%3F%3ABool-instance-method" class="signature"><strong>#glob?</strong> : Bool</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#hash%28hasher%29-instance-method" class="signature"><strong>#hash</strong>(hasher)</a>
+        
+          <div class="summary"><p>See <code>Object#hash(hasher)</code></p></div>
         
       </li>
     
@@ -356,7 +383,7 @@ path_part.name <span class="o">=&gt;</span> <span class="s">&quot;users&quot;</s
     <div class="entry-detail" id="new(part:String)-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>(part : String)
+        def self.<strong>new</strong>(part : <a href="../String.html">String</a>)
 
         <a class="method-permalink" href="#new%28part%3AString%29-class-method">#</a>
       </div>
@@ -364,7 +391,7 @@ path_part.name <span class="o">=&gt;</span> <span class="s">&quot;users&quot;</s
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/path_part.cr#L37" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_part.cr#L40" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -384,7 +411,7 @@ path_part.name <span class="o">=&gt;</span> <span class="s">&quot;users&quot;</s
     <div class="entry-detail" id="split_path(path:String):Array(PathPart)-class-method">
       <div class="signature">
         
-        def self.<strong>split_path</strong>(path : String) : Array(<a href="../LuckyRouter/PathPart.html">PathPart</a>)
+        def self.<strong>split_path</strong>(path : <a href="../String.html">String</a>) : Array(<a href="../LuckyRouter/PathPart.html">PathPart</a>)
 
         <a class="method-permalink" href="#split_path%28path%3AString%29%3AArray%28PathPart%29-class-method">#</a>
       </div>
@@ -392,7 +419,7 @@ path_part.name <span class="o">=&gt;</span> <span class="s">&quot;users&quot;</s
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/path_part.cr#L30" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_part.cr#L30" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -411,6 +438,20 @@ path_part.name <span class="o">=&gt;</span> <span class="s">&quot;users&quot;</s
     Instance Method Detail
   </h2>
   
+    <div class="entry-detail" id="==(other:self)-instance-method">
+      <div class="signature">
+        
+        def <strong>==</strong>(other : <span class="k">self</span>)
+
+        <a class="method-permalink" href="#%3D%3D%28other%3Aself%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
     <div class="entry-detail" id="glob?:Bool-instance-method">
       <div class="signature">
         
@@ -422,7 +463,30 @@ path_part.name <span class="o">=&gt;</span> <span class="s">&quot;users&quot;</s
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/path_part.cr#L53" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_part.cr#L53" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="hash(hasher)-instance-method">
+      <div class="signature">
+        
+        def <strong>hash</strong>(hasher)
+
+        <a class="method-permalink" href="#hash%28hasher%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from struct Struct
+            </div>
+          
+          <p>See <code>Object#hash(hasher)</code></p>
+        </div>
+      
+      <br/>
+      <div>
         
       </div>
     </div>
@@ -430,7 +494,7 @@ path_part.name <span class="o">=&gt;</span> <span class="s">&quot;users&quot;</s
     <div class="entry-detail" id="name:String-instance-method">
       <div class="signature">
         
-        def <strong>name</strong> : String
+        def <strong>name</strong> : <a href="../String.html">String</a>
 
         <a class="method-permalink" href="#name%3AString-instance-method">#</a>
       </div>
@@ -438,7 +502,7 @@ path_part.name <span class="o">=&gt;</span> <span class="s">&quot;users&quot;</s
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/path_part.cr#L40" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_part.cr#L36" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -454,7 +518,7 @@ path_part.name <span class="o">=&gt;</span> <span class="s">&quot;users&quot;</s
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/path_part.cr#L45" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_part.cr#L45" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -462,7 +526,7 @@ path_part.name <span class="o">=&gt;</span> <span class="s">&quot;users&quot;</s
     <div class="entry-detail" id="part:String-instance-method">
       <div class="signature">
         
-        def <strong>part</strong> : String
+        def <strong>part</strong> : <a href="../String.html">String</a>
 
         <a class="method-permalink" href="#part%3AString-instance-method">#</a>
       </div>
@@ -470,7 +534,7 @@ path_part.name <span class="o">=&gt;</span> <span class="s">&quot;users&quot;</s
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/path_part.cr#L35" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_part.cr#L35" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -486,7 +550,7 @@ path_part.name <span class="o">=&gt;</span> <span class="s">&quot;users&quot;</s
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/path_part.cr#L49" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_part.cr#L49" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -502,7 +566,7 @@ path_part.name <span class="o">=&gt;</span> <span class="s">&quot;users&quot;</s
       <br/>
       <div>
         
-          [<a href="https://github.com/luckyframework/lucky_router/blob/9959945af37f5215b2d3528e9b2525739de93894/src/lucky_router/path_part.cr#L57" target="_blank">View source</a>]
+          [<a href="https://github.com/luckyframework/lucky_router/blob/fb9ee92d12dc1bf24a309a5c1f9aeb07a68ecfe2/src/lucky_router/path_part.cr#L57" target="_blank">View source</a>]
         
       </div>
     </div>
